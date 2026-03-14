@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitSlot</title>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Root redirect based on role
+        if (Auth.isLoggedIn()) {
+            if (Auth.getRole() === 'admin') {
+                window.location.href = '/admin/dashboard.html';
+            } else {
+                window.location.href = '/dashboard.html';
+            }
+        } else {
+            window.location.href = '/login.html';
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitSlot – My Bookings">
+    <title>My Bookings – FitSlot</title>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🏋️</div>
+                <div class="logo-text">Fit<span>Slot</span></div>
+            </div>
+            <nav class="sidebar-nav">
+                <span class="nav-section-label">Student</span>
+                <a href="/dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
+                <a href="/slots.html" class="nav-item"><span class="nav-icon">📅</span> Book a Slot</a>
+                <a href="/my-bookings.html" class="nav-item active"><span class="nav-icon">📋</span> My Bookings</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="avatar" id="sidebar-avatar">?</div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebar-name">—</div>
+                        <div class="user-role" id="sidebar-role">student</div>
+                    </div>
+                </div>
+                <button class="btn btn-ghost btn-full btn-sm" data-action="logout">⏻ Sign Out</button>
+            </div>
+        </aside>
+
+        <div class="main-area">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:1rem">
+                    <button class="hamburger" id="hamburger">☰</button>
+                    <h4 style="color:var(--text-primary);font-size:0.95rem">My Bookings</h4>
+                </div>
+            </header>
+
+            <main class="page-content">
+                <div class="page-header">
+                    <div class="page-header-top">
+                        <div>
+                            <h1 class="page-title">My Bookings</h1>
+                            <p class="page-subtitle">History of all your gym slot reservations</p>
+                        </div>
+                        <a href="/slots.html" class="btn btn-primary">📅 Book New Slot</a>
+                    </div>
+                </div>
+
+                <div class="alert alert-error" id="alert-error"></div>
+                <div class="alert alert-success" id="alert-success"></div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-btn active" id="tab-upcoming" onclick="switchTab('upcoming')">Upcoming</button>
+                    <button class="tab-btn" id="tab-past" onclick="switchTab('past')">Past</button>
+                    <button class="tab-btn" id="tab-all" onclick="switchTab('all')">All</button>
+                </div>
+
+                <div class="card" style="padding:0">
+                    <div class="table-wrap">
+                        <table id="bookings-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Slot</th>
+                                    <th>Time</th>
+                                    <th>Status</th>
+                                    <th>Attendance</th>
+                                    <th>Categories</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bookings-tbody">
+                                <tr>
+                                    <td colspan="7" style="text-align:center;padding:3rem">
+                                        <div class="spinner" style="margin:0 auto 1rem"></div>Loading…
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ═══ Cancel Confirmation Modal ════════════════════════════════ -->
+    <div class="modal-overlay" id="cancel-modal">
+        <div class="modal" style="max-width:420px">
+            <div class="modal-header">
+                <h3 style="color:var(--danger)">Cancel Booking</h3>
+                <button class="modal-close" onclick="closeCancelModal()">✕</button>
+            </div>
+
+            <p style="color:var(--text-secondary);margin-bottom:1rem;font-size:0.9rem">
+                Are you sure you want to cancel this booking?
+            </p>
+
+            <div id="cancel-booking-info" style="padding:0.9rem 1rem;background:var(--bg-card);border-radius:var(--radius-md);
+                margin-bottom:1rem;border-left:3px solid var(--danger)">
+            </div>
+
+            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:1.5rem">
+                Note: Cancellations must be made at least 10 minutes before the slot starts.
+                Waitlisted students will be automatically promoted.
+            </p>
+
+            <div style="display:flex;gap:0.75rem">
+                <button class="btn btn-outline btn-full" onclick="closeCancelModal()">
+                    No, Keep It
+                </button>
+                <button class="btn btn-full" id="confirm-cancel-btn" onclick="doCancel()"
+                    style="background:var(--danger);color:#fff;border:none;">
+                    <span id="cancel-btn-text">Yes, Cancel Booking</span>
+                    <div class="spinner" id="cancel-spinner"
+                        style="display:none;width:16px;height:16px;border-color:#fff;border-top-color:transparent;">
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!Auth.requireStudent()) throw new Error('Not authorized');
+
+        let allBookings = [];
+        let pendingCancelId = null;
+        const today = new Date().toLocaleDateString('en-CA');
+
+        function showAlert(type, msg) {
+            ['error', 'success'].forEach(t => document.getElementById(`alert-${t}`).classList.remove('show'));
+            const el = document.getElementById(`alert-${type}`);
+            el.textContent = (type === 'error' ? '⚠ ' : '✓ ') + msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 5000);
+        }
+
+        function switchTab(tab) {
+            ['upcoming', 'past', 'all'].forEach(t =>
+                document.getElementById(`tab-${t}`).classList.toggle('active', t === tab));
+            let filtered;
+            if (tab === 'upcoming') filtered = allBookings.filter(b => b.date >= today && b.status !== 'cancelled');
+            else if (tab === 'past') filtered = allBookings.filter(b => b.date < today);
+            else filtered = allBookings;
+            renderTable(filtered);
+        }
+
+        const statusBadge = { confirmed: 'badge-success', waitlist: 'badge-info', cancelled: 'badge-muted' };
+        const attendanceBadge = { present: 'badge-success', absent: 'badge-danger', pending: 'badge-muted' };
+
+        function formatDate(dateStr) {
+            return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-IN',
+                { weekday: 'short', day: '2-digit', month: 'short' });
+        }
+
+        function renderTable(bookings) {
+            const tbody = document.getElementById('bookings-tbody');
+            if (!bookings.length) {
+                tbody.innerHTML = `<tr><td colspan="7">
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <div class="empty-title">No bookings found</div>
+          <div class="empty-desc">Your bookings will appear here</div>
+        </div></td></tr>`;
+                return;
+            }
+            tbody.innerHTML = bookings.map(b => {
+                const isPast = b.date < today;
+                const canCancel = (b.status === 'confirmed' || b.status === 'waitlist') && !isPast;
+                const attendSt = b.attendance_status || 'pending';
+                return `
+        <tr>
+          <td class="td-primary">${formatDate(b.date)}</td>
+          <td class="td-primary">${b.slot_name}</td>
+          <td>${b.start_time} – ${b.end_time}</td>
+          <td><span class="badge ${statusBadge[b.status] || 'badge-muted'}">${b.status}</span></td>
+          <td>
+            ${b.status !== 'cancelled'
+                        ? `<span class="badge ${attendanceBadge[attendSt]}">${attendSt}</span>`
+                        : '–'}
+          </td>
+          <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.8rem">
+            ${b.categories || '–'}
+          </td>
+          <td>
+            ${canCancel
+                        ? `<button class="btn btn-danger btn-sm"
+                  onclick="openCancelModal(${b.id}, '${b.start_time}', '${b.end_time}', '${b.slot_name}')">
+                  ✕ Cancel</button>`
+                        : '–'}
+          </td>
+        </tr>`;
+            }).join('');
+        }
+
+        /* ─── Cancel modal ─────────────────────────────────────── */
+        function openCancelModal(bookingId, start, end, slotName) {
+            pendingCancelId = bookingId;
+            document.getElementById('cancel-booking-info').innerHTML = `
+      <div style="font-size:1.05rem;font-weight:700;color:var(--text-primary)">${start} – ${end}</div>
+      <div style="font-size:0.82rem;color:var(--text-muted);margin-top:3px">${slotName} Slot</div>`;
+            document.getElementById('cancel-modal').classList.add('open');
+        }
+
+        function closeCancelModal() {
+            document.getElementById('cancel-modal').classList.remove('open');
+            pendingCancelId = null;
+        }
+
+        async function doCancel() {
+            if (!pendingCancelId) return;
+            const btnText = document.getElementById('cancel-btn-text');
+            const spinner = document.getElementById('cancel-spinner');
+            const btn = document.getElementById('confirm-cancel-btn');
+            btnText.style.display = 'none';
+            spinner.style.display = '';
+            btn.disabled = true;
+            try {
+                await api.cancelBooking(pendingCancelId);
+                closeCancelModal();
+                showAlert('success', 'Booking cancelled successfully.');
+                await loadBookings();
+            } catch (e) {
+                closeCancelModal();
+                showAlert('error', e.message);
+            }
+            btnText.style.display = '';
+            spinner.style.display = 'none';
+            btn.disabled = false;
+        }
+
+        document.getElementById('cancel-modal').addEventListener('click', e => {
+            if (e.target === e.currentTarget) closeCancelModal();
+        });
+
+        async function loadBookings() {
+            try {
+                const data = await api.getBookings();
+                allBookings = data.bookings;
+                switchTab('upcoming');
+            } catch (e) {
+                document.getElementById('bookings-tbody').innerHTML =
+                    `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--danger)">Error: ${e.message}</td></tr>`;
+            }
+        }
+
+        loadBookings();
+    </script>
+</body>
+
+</html>

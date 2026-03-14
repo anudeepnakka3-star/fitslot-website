@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitSlot – Admin Analytics Dashboard">
+    <title>Admin Dashboard – FitSlot</title>
+    <link rel="stylesheet" href="/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <div class="app-layout">
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🏋️</div>
+                <div class="logo-text">Fit<span>Slot</span></div>
+            </div>
+            <nav class="sidebar-nav">
+                <span class="nav-section-label">Admin</span>
+                <a href="/admin/dashboard.html" class="nav-item active"><span class="nav-icon">📊</span> Dashboard</a>
+                <a href="/admin/slots.html" class="nav-item"><span class="nav-icon">📅</span> Slot Monitor</a>
+                <a href="/admin/attendance.html" class="nav-item"><span class="nav-icon">✅</span> Attendance</a>
+                <a href="/admin/students.html" class="nav-item"><span class="nav-icon">👥</span> Students</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="avatar" id="sidebar-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebar-name">Admin</div>
+                        <div class="user-role" id="sidebar-role">admin</div>
+                    </div>
+                </div>
+                <button class="btn btn-ghost btn-full btn-sm" data-action="logout">⏻ Sign Out</button>
+            </div>
+        </aside>
+
+        <div class="main-area">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:1rem">
+                    <button class="hamburger" id="hamburger">☰</button>
+                    <div>
+                        <h4 style="color:var(--text-primary);font-size:0.95rem">Analytics Dashboard</h4>
+                        <p style="font-size:0.75rem;color:var(--text-muted)" id="today-label">—</p>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.75rem">
+                    <input type="date" class="form-input" id="date-picker"
+                        style="width:160px;font-size:0.82rem;padding:0.4rem 0.75rem">
+                    <button class="btn btn-outline btn-sm" onclick="loadAll()">Refresh</button>
+                </div>
+            </header>
+
+            <main class="page-content">
+                <div class="page-header">
+                    <h1 class="page-title">Gym Analytics</h1>
+                </div>
+
+                <!-- KPIs -->
+                <div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))">
+                    <div class="kpi-card" style="--kpi-color:var(--accent)">
+                        <div class="kpi-icon">📋</div>
+                        <div class="kpi-value" id="kpi-bookings">—</div>
+                        <div class="kpi-label">Bookings Today</div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color:var(--info)">
+                        <div class="kpi-icon">✅</div>
+                        <div class="kpi-value" id="kpi-present">—</div>
+                        <div class="kpi-label">Present</div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color:var(--warning)">
+                        <div class="kpi-icon">❌</div>
+                        <div class="kpi-value" id="kpi-absent">—</div>
+                        <div class="kpi-label">Absent</div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color:var(--accent)">
+                        <div class="kpi-icon">📈</div>
+                        <div class="kpi-value" id="kpi-rate">—%</div>
+                        <div class="kpi-label">Attendance Rate</div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color:var(--danger)">
+                        <div class="kpi-icon">⚡</div>
+                        <div class="kpi-value" id="kpi-peak">—</div>
+                        <div class="kpi-label">Peak Slot</div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color:var(--info)">
+                        <div class="kpi-icon">👥</div>
+                        <div class="kpi-value" id="kpi-students">—</div>
+                        <div class="kpi-label">Registered Students</div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1.5rem">
+                    <!-- 7-day trend -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">📈 7-Day Booking Trend</span>
+                        </div>
+                        <canvas id="trend-chart" height="120"></canvas>
+                    </div>
+                    <!-- Category donut -->
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title">🏋️ Workout Categories</span>
+                        </div>
+                        <canvas id="cat-chart" height="140"></canvas>
+                        <div id="cat-legend"
+                            style="margin-top:0.75rem;display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slot utilization -->
+                <div class="card" style="margin-bottom:1.5rem">
+                    <div class="card-header">
+                        <span class="card-title">📅 Slot Utilization</span>
+                        <span class="badge badge-muted" id="util-date">—</span>
+                    </div>
+                    <div id="slot-util-list" style="display:flex;flex-direction:column;gap:1rem"></div>
+                </div>
+
+                <!-- No-show alerts -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">⚠ No-Show Alerts</span>
+                        <a href="/admin/students.html" class="btn btn-outline btn-sm">Manage Students</a>
+                    </div>
+                    <div class="table-wrap" style="border:none">
+                        <table id="noshow-table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Email</th>
+                                    <th>Roll No.</th>
+                                    <th>No-Shows</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="noshow-tbody">
+                                <tr>
+                                    <td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">
+                                        Loading…</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!Auth.requireAdmin()) throw new Error('Not authorized');
+
+        const today = new Date().toLocaleDateString('en-CA');
+        document.getElementById('date-picker').value = today;
+        document.getElementById('today-label').textContent =
+            new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        let trendChart, catChart;
+
+        const CHART_COLORS = ['#00e676', '#29b6f6', '#ffb300', '#ff4d6d', '#ab47bc', '#26c6da'];
+
+        async function loadAll() {
+            const date = document.getElementById('date-picker').value || today;
+            try {
+                const [summary, cats, noshows, students] = await Promise.all([
+                    api.getSummary(date),
+                    api.getCategoryStats(30),
+                    api.getNoShows(),
+                    api.getStudentStats()
+                ]);
+
+                // KPIs
+                document.getElementById('kpi-bookings').textContent = summary.total_bookings;
+                document.getElementById('kpi-present').textContent = summary.total_present;
+                document.getElementById('kpi-absent').textContent = summary.total_absent;
+                document.getElementById('kpi-rate').textContent = summary.attendance_rate + '%';
+                document.getElementById('kpi-peak').textContent = summary.peak_slot?.name || '–';
+                document.getElementById('kpi-students').textContent = students.total;
+                document.getElementById('util-date').textContent = date;
+
+                // Trend chart
+                const trendCtx = document.getElementById('trend-chart').getContext('2d');
+                if (trendChart) trendChart.destroy();
+                trendChart = new Chart(trendCtx, {
+                    type: 'line',
+                    data: {
+                        labels: summary.trend.map(t => t.date),
+                        datasets: [
+                            {
+                                label: 'Bookings',
+                                data: summary.trend.map(t => t.total),
+                                borderColor: '#00e676',
+                                backgroundColor: 'rgba(0,230,118,0.1)',
+                                tension: 0.4, fill: true, pointRadius: 4,
+                                pointBackgroundColor: '#00e676'
+                            },
+                            {
+                                label: 'Present',
+                                data: summary.trend.map(t => t.present),
+                                borderColor: '#29b6f6',
+                                backgroundColor: 'rgba(41,182,246,0.07)',
+                                tension: 0.4, fill: true, pointRadius: 4,
+                                pointBackgroundColor: '#29b6f6'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { labels: { color: '#8a9bc4', font: { size: 12 } } } },
+                        scales: {
+                            x: { ticks: { color: '#8a9bc4', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                            y: { ticks: { color: '#8a9bc4', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.05)' }, beginAtZero: true }
+                        }
+                    }
+                });
+
+                // Category donut
+                const catCtx = document.getElementById('cat-chart').getContext('2d');
+                if (catChart) catChart.destroy();
+                const catLabels = cats.categories.map(c => c.name);
+                const catData = cats.categories.map(c => c.count);
+                catChart = new Chart(catCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: catLabels,
+                        datasets: [{ data: catData, backgroundColor: CHART_COLORS, borderWidth: 2, borderColor: '#111827' }]
+                    },
+                    options: {
+                        responsive: true,
+                        cutout: '65%',
+                        plugins: { legend: { display: false } }
+                    }
+                });
+                document.getElementById('cat-legend').innerHTML = catLabels.map((l, i) => `
+        <div style="display:flex;align-items:center;gap:4px;font-size:0.75rem;color:var(--text-secondary)">
+          <span style="width:10px;height:10px;border-radius:50%;background:${CHART_COLORS[i]}"></span>${l}
+        </div>
+      `).join('');
+
+                // Slot utilization
+                document.getElementById('slot-util-list').innerHTML = summary.slot_utilization.map(s => {
+                    const pct = Math.round((s.booked / s.capacity) * 100);
+                    return `
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:0.3rem">
+              <span style="color:var(--text-primary);font-weight:500">${s.name} <span style="color:var(--text-muted);font-weight:400">(${s.start_time}–${s.end_time})</span></span>
+              <span style="color:var(--text-muted)">${s.booked}/${s.capacity} (${pct}%)${s.waitlisted > 0 ? ` · ${s.waitlisted} waiting` : ''}</span>
+            </div>
+            <div class="progress-wrap">
+              <div class="progress-bar ${pct >= 100 ? 'danger' : pct >= 80 ? 'warning' : ''}" style="width:${Math.min(pct, 100)}%"></div>
+            </div>
+          </div>
+        `;
+                }).join('');
+
+                // No-shows table
+                document.getElementById('noshow-tbody').innerHTML = noshows.students.length === 0
+                    ? '<tr><td colspan="5" class="empty-state" style="padding:2rem;text-align:center"><div class="empty-title">No no-show alerts</div></td></tr>'
+                    : noshows.students.map(s => {
+                        const isBlocked = s.blocked_until && new Date(s.blocked_until) > new Date();
+                        return `
+            <tr>
+              <td class="td-primary">${s.name}</td>
+              <td>${s.email}</td>
+              <td>${s.roll_number || '–'}</td>
+              <td style="color:${s.no_show_count >= 3 ? 'var(--danger)' : 'var(--warning)'}; font-weight:700">${s.no_show_count}</td>
+              <td>
+                ${isBlocked
+                                ? `<span class="badge badge-danger">Blocked until ${new Date(s.blocked_until).toLocaleDateString('en-IN')}</span>`
+                                : `<span class="badge badge-warning">Active (${3 - s.no_show_count} warnings left)</span>`}
+              </td>
+            </tr>
+          `;
+                    }).join('');
+
+            } catch (e) {
+                console.error('Dashboard error:', e);
+            }
+        }
+
+        loadAll();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitSlot – Admin login to manage gym operations">
+    <title>Admin Login – FitSlot</title>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <div class="auth-page">
+        <div class="auth-box fade-in">
+            <div class="auth-logo">
+                <div class="logo-icon">🏋️</div>
+                <div class="logo-text">Fit<span>Slot</span></div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.5rem">
+                <span class="badge badge-warning" style="font-size:0.75rem">Admin Portal</span>
+            </div>
+
+            <h2 class="auth-title">Admin Login</h2>
+            <p class="auth-subtitle">Restricted to authorized personnel only</p>
+
+            <div class="alert alert-error" id="alert-error" role="alert" style="margin-top:1rem"></div>
+
+            <form id="admin-login-form" autocomplete="on" style="margin-top:1.5rem">
+                <div class="form-group">
+                    <label class="form-label" for="email">Admin Email</label>
+                    <input class="form-input" type="email" id="email" placeholder="admin@bvrit.ac.in"
+                        autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input class="form-input" type="password" id="password" placeholder="••••••••"
+                        autocomplete="current-password" required>
+                </div>
+
+                <button class="btn btn-primary btn-full btn-lg" type="submit" id="login-btn" style="margin-top:0.5rem">
+                    <span id="btn-text">Sign In as Admin</span>
+                    <div class="spinner" id="spinner" style="display:none; width:18px;height:18px;"></div>
+                </button>
+
+                <p style="text-align:center;margin-top:1rem;font-size:0.82rem;color:var(--text-muted)">
+                    Student? <a href="/login.html">Student Login →</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        if (Auth.isLoggedIn() && Auth.getRole() === 'admin') {
+            window.location.href = '/admin/dashboard.html';
+        }
+
+        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const alert = document.getElementById('alert-error');
+            alert.classList.remove('show');
+            document.getElementById('btn-text').style.display = 'none';
+            document.getElementById('spinner').style.display = '';
+            document.getElementById('login-btn').disabled = true;
+
+            try {
+                const data = await api.login(
+                    document.getElementById('email').value.trim(),
+                    document.getElementById('password').value
+                );
+                if (data.user.role !== 'admin') {
+                    throw new Error('Access denied. This portal is for admins only.');
+                }
+                Auth.setSession(data.token, data.user);
+                window.location.href = '/admin/dashboard.html';
+            } catch (err) {
+                alert.textContent = '⚠ ' + err.message;
+                alert.classList.add('show');
+                document.getElementById('btn-text').style.display = '';
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('login-btn').disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

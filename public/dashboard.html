@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitSlot – Student Dashboard">
+    <title>Dashboard – FitSlot</title>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Backdrop (mobile) -->
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🏋️</div>
+                <div class="logo-text">Fit<span>Slot</span></div>
+            </div>
+            <nav class="sidebar-nav">
+                <span class="nav-section-label">Student</span>
+                <a href="/dashboard.html" class="nav-item active">
+                    <span class="nav-icon">🏠</span> Dashboard
+                </a>
+                <a href="/slots.html" class="nav-item">
+                    <span class="nav-icon">📅</span> Book a Slot
+                </a>
+                <a href="/my-bookings.html" class="nav-item">
+                    <span class="nav-icon">📋</span> My Bookings
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="avatar" id="sidebar-avatar">?</div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebar-name">Loading…</div>
+                        <div class="user-role" id="sidebar-role">student</div>
+                    </div>
+                </div>
+                <button class="btn btn-ghost btn-full btn-sm" data-action="logout">⏻ Sign Out</button>
+            </div>
+        </aside>
+
+        <!-- Main Area -->
+        <div class="main-area">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:1rem">
+                    <button class="hamburger" id="hamburger">☰</button>
+                    <div>
+                        <h4 style="color:var(--text-primary);font-size:0.95rem">Dashboard</h4>
+                        <p style="font-size:0.75rem;color:var(--text-muted)" id="today-date">Loading…</p>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:1rem;position:relative">
+                    <button class="notif-btn" id="notif-btn" title="Notifications">
+                        🔔
+                        <span class="notif-badge" id="notif-badge">0</span>
+                    </button>
+                    <div class="notif-dropdown" id="notif-dropdown">
+                        <div class="notif-header">
+                            <span
+                                style="font-size:0.85rem;font-weight:600;color:var(--text-primary)">Notifications</span>
+                            <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all read</button>
+                        </div>
+                        <div class="notif-list" id="notif-list">
+                            <div class="empty-state" style="padding:2rem">
+                                <div class="empty-desc">No notifications yet</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content -->
+            <main class="page-content">
+                <!-- Welcome -->
+                <div class="page-header">
+                    <div class="page-header-top">
+                        <div>
+                            <h1 class="page-title">Welcome, <span class="text-accent" id="welcome-name">—</span> 👋</h1>
+                            <p class="page-subtitle">Here's your gym status for today</p>
+                        </div>
+                        <a href="/slots.html" class="btn btn-primary">📅 Book a Slot</a>
+                    </div>
+                </div>
+
+                <!-- KPIs -->
+                <div class="kpi-grid">
+                    <div class="kpi-card" style="--kpi-color: var(--accent)">
+                        <div class="kpi-icon">📊</div>
+                        <div class="kpi-value" id="kpi-slots-available">—</div>
+                        <div class="kpi-label">Slots Available Today</div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color: var(--info)">
+                        <div class="kpi-icon">📋</div>
+                        <div class="kpi-value" id="kpi-total-bookings">—</div>
+                        <div class="kpi-label">Total Bookings</div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color: var(--warning)">
+                        <div class="kpi-icon">⚠</div>
+                        <div class="kpi-value" id="kpi-noshows">—</div>
+                        <div class="kpi-label">No-Show Count</div>
+                    </div>
+                    <div class="kpi-card" style="--kpi-color: var(--danger)">
+                        <div class="kpi-icon">📅</div>
+                        <div class="kpi-value" id="kpi-today-booking">—</div>
+                        <div class="kpi-label">Today's Booking</div>
+                    </div>
+                </div>
+
+                <!-- Today's booking card -->
+                <div class="card" style="margin-bottom:1.5rem" id="today-booking-section">
+                    <div class="card-header">
+                        <span class="card-title">📍 Today's Slot</span>
+                        <span class="badge badge-muted" id="today-slot-status">No booking</span>
+                    </div>
+                    <div id="today-slot-details">
+                        <div class="empty-state" style="padding:2rem 1rem">
+                            <div class="empty-icon">🏋️</div>
+                            <div class="empty-title">No slot booked today</div>
+                            <div class="empty-desc" style="margin-bottom:1rem">Reserve your spot before they fill up!
+                            </div>
+                            <a href="/slots.html" class="btn btn-primary btn-sm">Book Now</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Slots Preview -->
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">⚡ Today's Slot Availability</span>
+                        <a href="/slots.html" class="btn btn-outline btn-sm">View All</a>
+                    </div>
+                    <div id="slots-preview">
+                        <div style="text-align:center;padding:2rem;color:var(--text-muted)">
+                            <div class="spinner" style="margin:0 auto 1rem"></div>
+                            Loading slots…
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!Auth.requireStudent()) throw new Error('Not authorized');
+
+        const user = Auth.getUser();
+
+        // Set welcome name
+        document.getElementById('welcome-name').textContent = user.name.split(' ')[0];
+        document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Update KPI no-shows
+        document.getElementById('kpi-noshows').textContent = user.no_show_count || 0;
+        if (user.no_show_count >= 3) {
+            document.getElementById('kpi-noshows').style.color = 'var(--danger)';
+        }
+
+        // Notifications
+        const notifBtn = document.getElementById('notif-btn');
+        const notifDropdown = document.getElementById('notif-dropdown');
+        notifBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notifDropdown.classList.toggle('open');
+        });
+        document.addEventListener('click', () => notifDropdown.classList.remove('open'));
+
+        async function loadNotifications() {
+            try {
+                const data = await api.getNotifications();
+                const badge = document.getElementById('notif-badge');
+                const list = document.getElementById('notif-list');
+
+                if (data.unread > 0) {
+                    badge.textContent = data.unread;
+                    badge.classList.add('visible');
+                }
+
+                if (data.notifications.length === 0) {
+                    list.innerHTML = '<div class="empty-state" style="padding:2rem"><div class="empty-desc">No notifications yet</div></div>';
+                    return;
+                }
+
+                list.innerHTML = data.notifications.map(n => `
+        <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="readNotif(${n.id}, this)">
+          <div class="notif-msg">${n.message}</div>
+          <div class="notif-time">${timeAgo(n.created_at)}</div>
+        </div>
+      `).join('');
+            } catch (e) { console.warn('Notifications error:', e); }
+        }
+
+        async function readNotif(id, el) {
+            try {
+                await api.markRead(id);
+                el.classList.remove('unread');
+            } catch (e) { }
+        }
+
+        async function markAllRead() {
+            try {
+                await api.markAllRead();
+                document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+                document.getElementById('notif-badge').classList.remove('visible');
+            } catch (e) { }
+        }
+
+        function timeAgo(iso) {
+            const d = new Date(iso);
+            const diff = (Date.now() - d.getTime()) / 1000;
+            if (diff < 60) return 'Just now';
+            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+            return d.toLocaleDateString('en-IN');
+        }
+
+        async function loadDashboard() {
+            try {
+                const [slotsData, bookingsData] = await Promise.all([
+                    api.getSlots(),
+                    api.getBookings({ date: new Date().toLocaleDateString('en-CA') })
+                ]);
+
+                // Available slots
+                const availSlots = slotsData.slots.filter(s => s.available > 0 && s.window_status === 'open');
+                document.getElementById('kpi-slots-available').textContent = availSlots.length;
+
+                // Total bookings ever
+                const allBook = await api.getBookings();
+                document.getElementById('kpi-total-bookings').textContent = allBook.bookings.filter(b => b.status !== 'cancelled').length;
+
+                // Today's booking
+                const todayBooking = bookingsData.bookings.find(b => b.status !== 'cancelled');
+                if (todayBooking) {
+                    document.getElementById('kpi-today-booking').textContent = todayBooking.slot_name;
+                    const statusBadge = { confirmed: 'badge-success', waitlist: 'badge-info', cancelled: 'badge-muted' };
+                    document.getElementById('today-slot-status').className = `badge ${statusBadge[todayBooking.status] || 'badge-muted'}`;
+                    document.getElementById('today-slot-status').textContent = todayBooking.status.toUpperCase();
+
+                    document.getElementById('today-slot-details').innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-top:0.5rem">
+            <div>
+              <div style="font-size:1.6rem;font-weight:800;color:var(--text-primary)">${todayBooking.start_time} – ${todayBooking.end_time}</div>
+              <div style="color:var(--text-muted);font-size:0.85rem">${todayBooking.slot_name} Slot</div>
+              ${todayBooking.categories ? `<div style="margin-top:0.5rem;font-size:0.8rem;color:var(--accent)">🏋️ ${todayBooking.categories}</div>` : ''}
+              ${todayBooking.attendance_status === 'present' ? '<span class="badge badge-success" style="margin-top:0.5rem">✓ Present</span>' : ''}
+              ${todayBooking.attendance_status === 'absent' ? '<span class="badge badge-danger" style="margin-top:0.5rem">✗ Absent</span>' : ''}
+            </div>
+            ${todayBooking.status === 'confirmed' ? `<button class="btn btn-danger btn-sm" onclick="cancelBooking(${todayBooking.id})">Cancel Booking</button>` : ''}
+          </div>
+        `;
+                } else {
+                    document.getElementById('kpi-today-booking').textContent = 'None';
+                }
+
+                // Slots preview
+                const slotColors = ['open', 'full', 'ended', 'not_yet'];
+                document.getElementById('slots-preview').innerHTML = `
+        <div style="display:flex;flex-direction:column;gap:0.75rem">
+          ${slotsData.slots.map(s => {
+                    const pct = Math.round((s.confirmed_count / s.capacity) * 100);
+                    const isOver = pct >= 80;
+                    return `
+              <div style="display:flex;align-items:center;gap:1rem">
+                <div style="min-width:110px;font-size:0.85rem;font-weight:600;color:var(--text-primary)">${s.start_time}–${s.end_time}</div>
+                <div style="flex:1">
+                  <div class="progress-wrap">
+                    <div class="progress-bar ${pct >= 100 ? 'danger' : isOver ? 'warning' : ''}" style="width:${Math.min(pct, 100)}%"></div>
+                  </div>
+                </div>
+                <div style="min-width:80px;text-align:right;font-size:0.78rem;color:var(--text-muted)">${s.confirmed_count}/${s.capacity} filled</div>
+                <div style="min-width:60px;text-align:right">
+                  ${s.user_booking && s.user_booking.status === 'confirmed' ? '<span class="badge badge-success">Booked</span>'
+                            : s.user_booking && s.user_booking.status === 'waitlist' ? '<span class="badge badge-info">Waitlist</span>'
+                                : s.window_status === 'ended' ? '<span class="badge badge-muted">Ended</span>'
+                                    : s.available > 0 ? '<span class="badge badge-success">Open</span>'
+                                        : '<span class="badge badge-warning">Full</span>'}
+                </div>
+              </div>
+            `;
+                }).join('')}
+        </div>
+      `;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function cancelBooking(id) {
+            if (!confirm('Cancel this booking?')) return;
+            try {
+                await api.cancelBooking(id);
+                location.reload();
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+
+        loadDashboard();
+        loadNotifications();
+    </script>
+</body>
+
+</html>

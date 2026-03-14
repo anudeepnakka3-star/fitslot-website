@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitSlot – Attendance Management">
+    <title>Attendance – FitSlot</title>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🏋️</div>
+                <div class="logo-text">Fit<span>Slot</span></div>
+            </div>
+            <nav class="sidebar-nav">
+                <span class="nav-section-label">Admin</span>
+                <a href="/admin/dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+                <a href="/admin/slots.html" class="nav-item"><span class="nav-icon">📅</span> Slot Monitor</a>
+                <a href="/admin/attendance.html" class="nav-item active"><span class="nav-icon">✅</span> Attendance</a>
+                <a href="/admin/students.html" class="nav-item"><span class="nav-icon">👥</span> Students</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="avatar" id="sidebar-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebar-name">Admin</div>
+                        <div class="user-role" id="sidebar-role">admin</div>
+                    </div>
+                </div>
+                <button class="btn btn-ghost btn-full btn-sm" data-action="logout">⏻ Sign Out</button>
+            </div>
+        </aside>
+
+        <div class="main-area">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:1rem">
+                    <button class="hamburger" id="hamburger">☰</button>
+                    <h4 style="color:var(--text-primary);font-size:0.95rem">Attendance Management</h4>
+                </div>
+            </header>
+
+            <main class="page-content">
+                <div class="page-header">
+                    <h1 class="page-title">Mark Attendance</h1>
+                    <p class="page-subtitle">Select a slot and date, then mark each student present or absent</p>
+                </div>
+
+                <!-- Controls -->
+                <div class="card" style="margin-bottom:1.5rem">
+                    <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end">
+                        <div class="form-group" style="margin:0;min-width:200px">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-input" id="date-pick">
+                        </div>
+                        <div class="form-group" style="margin:0;min-width:220px">
+                            <label class="form-label">Slot</label>
+                            <select class="form-select" id="slot-pick">
+                                <option value="">Select slot…</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="loadAttendance()">Load Students</button>
+                    </div>
+                </div>
+
+                <div class="alert alert-error" id="alert-error"></div>
+                <div class="alert alert-success" id="alert-success"></div>
+
+                <!-- Attendance card -->
+                <div class="card" id="attendance-card" style="display:none">
+                    <div class="card-header">
+                        <span class="card-title">Students List</span>
+                        <div style="display:flex;gap:0.5rem">
+                            <button class="btn btn-outline btn-sm" onclick="markAll('present')">✓ All Present</button>
+                            <button class="btn btn-outline btn-sm" onclick="markAll('absent')">✗ All Absent</button>
+                        </div>
+                    </div>
+
+                    <div id="student-list" style="display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem">
+                    </div>
+
+                    <div style="display:flex;gap:0.75rem;justify-content:flex-end">
+                        <div style="color:var(--text-muted);font-size:0.82rem;align-self:center" id="submit-info"></div>
+                        <button class="btn btn-primary" id="submit-btn" onclick="submitAttendance()">
+                            <span id="submit-text">✅ Submit Attendance</span>
+                            <div class="spinner" id="submit-spinner" style="display:none;width:16px;height:16px;"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="empty-state" class="empty-state" style="display:none">
+                    <div class="empty-icon">👥</div>
+                    <div class="empty-title">No students found</div>
+                    <div class="empty-desc">No confirmed bookings for this slot and date</div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!Auth.requireAdmin()) throw new Error('Not authorized');
+
+        const today = new Date().toLocaleDateString('en-CA');
+        document.getElementById('date-pick').value = today;
+
+        // Pre-fill from URL params (from slot monitor links)
+        const params = new URLSearchParams(window.location.search);
+        let preSlot = params.get('slot');
+        let preDate = params.get('date');
+        if (preDate) document.getElementById('date-pick').value = preDate;
+
+        let attendance = {}; // { booking_id: 'present'|'absent' }
+        let students = [];
+
+        function showAlert(type, msg) {
+            ['error', 'success'].forEach(t => document.getElementById(`alert-${t}`).classList.remove('show'));
+            const el = document.getElementById(`alert-${type}`);
+            el.textContent = (type === 'error' ? '⚠ ' : '✓ ') + msg;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 6000);
+        }
+
+        // Load slots for dropdown
+        async function loadSlotOptions() {
+            try {
+                const data = await api.getSlots();
+                const sel = document.getElementById('slot-pick');
+                sel.innerHTML = '<option value="">Select slot…</option>' +
+                    data.slots.map(s => `<option value="${s.id}">${s.name} (${s.start_time}–${s.end_time})</option>`).join('');
+                if (preSlot) {
+                    sel.value = preSlot;
+                    loadAttendance();
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function updateCounter() {
+            const present = Object.values(attendance).filter(v => v === 'present').length;
+            const absent = Object.values(attendance).filter(v => v === 'absent').length;
+            document.getElementById('submit-info').textContent =
+                `${present} present · ${absent} absent · ${students.length - present - absent} unmarked`;
+        }
+
+        function renderStudents() {
+            const list = document.getElementById('student-list');
+            list.innerHTML = students.map(s => {
+                const currentStatus = attendance[s.booking_id] || s.attendance_status || 'pending';
+                return `
+        <div id="row-${s.booking_id}" style="display:flex;align-items:center;gap:1rem;padding:0.75rem 1rem;background:var(--bg-card);border-radius:var(--radius-md);transition:background 0.2s">
+          <div class="avatar">${s.name.charAt(0).toUpperCase()}</div>
+          <div style="flex:1">
+            <div style="font-weight:600;color:var(--text-primary)">${s.name}</div>
+            <div style="font-size:0.75rem;color:var(--text-muted)">${s.roll_number || s.email} · No-shows: ${s.no_show_count}</div>
+          </div>
+          <div style="display:flex;gap:0.5rem">
+            <button
+              id="btn-present-${s.booking_id}"
+              class="btn btn-sm ${currentStatus === 'present' ? 'btn-primary' : 'btn-outline'}"
+              style="${currentStatus === 'present' ? '' : 'border-color:var(--accent);color:var(--accent)'}"
+              onclick="setStatus(${s.booking_id}, 'present')">✓ Present</button>
+            <button
+              id="btn-absent-${s.booking_id}"
+              class="btn btn-sm ${currentStatus === 'absent' ? 'btn-danger' : 'btn-outline'}"
+              style="${currentStatus === 'absent' ? '' : 'border-color:var(--danger);color:var(--danger)'}"
+              onclick="setStatus(${s.booking_id}, 'absent')">✗ Absent</button>
+          </div>
+        </div>
+      `;
+            }).join('');
+            updateCounter();
+        }
+
+        function setStatus(bookingId, status) {
+            attendance[bookingId] = status;
+            // Update buttons
+            const pBtn = document.getElementById(`btn-present-${bookingId}`);
+            const aBtn = document.getElementById(`btn-absent-${bookingId}`);
+            pBtn.className = `btn btn-sm ${status === 'present' ? 'btn-primary' : 'btn-outline'}`;
+            pBtn.style.cssText = status === 'present' ? '' : 'border-color:var(--accent);color:var(--accent)';
+            aBtn.className = `btn btn-sm ${status === 'absent' ? 'btn-danger' : 'btn-outline'}`;
+            aBtn.style.cssText = status === 'absent' ? '' : 'border-color:var(--danger);color:var(--danger)';
+            const row = document.getElementById(`row-${bookingId}`);
+            row.style.background = status === 'present' ? 'rgba(0,230,118,0.06)' : status === 'absent' ? 'rgba(255,77,109,0.06)' : 'var(--bg-card)';
+            updateCounter();
+        }
+
+        function markAll(status) {
+            students.forEach(s => setStatus(s.booking_id, status));
+        }
+
+        async function loadAttendance() {
+            const slotId = document.getElementById('slot-pick').value;
+            const date = document.getElementById('date-pick').value;
+            if (!slotId) { showAlert('error', 'Please select a slot'); return; }
+
+            document.getElementById('attendance-card').style.display = 'none';
+            document.getElementById('empty-state').style.display = 'none';
+
+            try {
+                const data = await api.getAttendance(slotId, date);
+                students = data.records;
+                attendance = {};
+                students.forEach(s => {
+                    if (s.attendance_status && s.attendance_status !== 'pending') {
+                        attendance[s.booking_id] = s.attendance_status;
+                    }
+                });
+
+                if (students.length === 0) {
+                    document.getElementById('empty-state').style.display = 'block';
+                    return;
+                }
+
+                document.getElementById('attendance-card').style.display = 'block';
+                renderStudents();
+            } catch (e) {
+                showAlert('error', e.message);
+            }
+        }
+
+        async function submitAttendance() {
+            const entries = Object.entries(attendance).map(([booking_id, status]) => ({
+                booking_id: parseInt(booking_id), status
+            }));
+
+            if (entries.length === 0) {
+                showAlert('error', 'No attendance marked yet. Use the buttons to mark each student.');
+                return;
+            }
+
+            document.getElementById('submit-text').style.display = 'none';
+            document.getElementById('submit-spinner').style.display = '';
+            document.getElementById('submit-btn').disabled = true;
+
+            try {
+                const data = await api.markAttendance(entries);
+                let msg = `Attendance submitted for ${entries.length} students.`;
+                const blocked = (data.updates || []).filter(u => u.blocked);
+                if (blocked.length) msg += ` ${blocked.length} account(s) blocked for repeated no-shows.`;
+                showAlert('success', msg);
+                await loadAttendance();
+            } catch (e) {
+                showAlert('error', e.message);
+            }
+
+            document.getElementById('submit-text').style.display = '';
+            document.getElementById('submit-spinner').style.display = 'none';
+            document.getElementById('submit-btn').disabled = false;
+        }
+
+        loadSlotOptions();
+    </script>
+</body>
+
+</html>

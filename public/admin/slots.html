@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitSlot – Slot Monitoring">
+    <title>Slot Monitor – FitSlot</title>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <div class="logo-icon">🏋️</div>
+                <div class="logo-text">Fit<span>Slot</span></div>
+            </div>
+            <nav class="sidebar-nav">
+                <span class="nav-section-label">Admin</span>
+                <a href="/admin/dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
+                <a href="/admin/slots.html" class="nav-item active"><span class="nav-icon">📅</span> Slot Monitor</a>
+                <a href="/admin/attendance.html" class="nav-item"><span class="nav-icon">✅</span> Attendance</a>
+                <a href="/admin/students.html" class="nav-item"><span class="nav-icon">👥</span> Students</a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="avatar" id="sidebar-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebar-name">Admin</div>
+                        <div class="user-role" id="sidebar-role">admin</div>
+                    </div>
+                </div>
+                <button class="btn btn-ghost btn-full btn-sm" data-action="logout">⏻ Sign Out</button>
+            </div>
+        </aside>
+
+        <div class="main-area">
+            <header class="topbar">
+                <div style="display:flex;align-items:center;gap:1rem">
+                    <button class="hamburger" id="hamburger">☰</button>
+                    <div>
+                        <h4 style="color:var(--text-primary);font-size:0.95rem">Slot Monitor</h4>
+                        <p style="font-size:0.75rem;color:var(--text-muted)" id="today-label">—</p>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.75rem">
+                    <input type="date" class="form-input" id="date-picker"
+                        style="width:160px;font-size:0.82rem;padding:0.4rem 0.75rem">
+                    <button class="btn btn-outline btn-sm" onclick="loadSlots()">🔄 Refresh</button>
+                </div>
+            </header>
+
+            <main class="page-content">
+                <div class="page-header">
+                    <h1 class="page-title">Slot Monitor</h1>
+                    <p class="page-subtitle">Live occupancy and student lists for each slot</p>
+                </div>
+
+                <div id="slots-container" class="slots-grid"
+                    style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr))">
+                    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted)">
+                        <div class="spinner" style="margin:0 auto 1rem"></div>Loading…
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!Auth.requireAdmin()) throw new Error('Not authorized');
+
+        const today = new Date().toLocaleDateString('en-CA');
+        document.getElementById('date-picker').value = today;
+        document.getElementById('today-label').textContent =
+            new Date().toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' });
+
+        document.getElementById('date-picker').addEventListener('change', loadSlots);
+
+        async function loadSlots() {
+            const date = document.getElementById('date-picker').value || today;
+            const container = document.getElementById('slots-container');
+            try {
+                const slotsData = await api.getSlots(date);
+
+                if (!slotsData.slots.length) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-title">No slots found</div></div>';
+                    return;
+                }
+
+                // For each slot, load student list
+                container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted)"><div class="spinner" style="margin:0 auto 1rem"></div>Loading student lists…</div>';
+
+                const studentsLists = await Promise.all(
+                    slotsData.slots.map(s => api.getStudents(s.id, date).catch(() => ({ students: [] })))
+                );
+
+                container.innerHTML = slotsData.slots.map((slot, i) => {
+                    const pct = Math.round((slot.confirmed_count / slot.capacity) * 100);
+                    const students = studentsLists[i].students;
+                    const confirmed = students.filter(s => s.status === 'confirmed');
+                    const waitlisted = students.filter(s => s.status === 'waitlist');
+
+                    return `
+          <div class="slot-card">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem">
+              <div>
+                <div class="slot-time">${slot.start_time} – ${slot.end_time}</div>
+                <div class="slot-name">${slot.name} Slot</div>
+              </div>
+              <span class="badge ${pct >= 100 ? 'badge-danger' : pct >= 80 ? 'badge-warning' : 'badge-success'}">${slot.confirmed_count}/${slot.capacity}</span>
+            </div>
+
+            <div class="slot-availability" style="margin-bottom:1rem">
+              <div class="progress-wrap">
+                <div class="progress-bar ${pct >= 100 ? 'danger' : pct >= 80 ? 'warning' : ''}" style="width:${Math.min(pct, 100)}%"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-top:0.25rem">
+                <span style="color:var(--text-muted)">${slot.available} seats available</span>
+                ${slot.waitlist_count > 0 ? `<span style="color:var(--info)">${slot.waitlist_count} waiting</span>` : ''}
+              </div>
+            </div>
+
+            ${confirmed.length > 0 ? `
+              <div style="margin-bottom:0.75rem">
+                <div style="font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem">Confirmed (${confirmed.length})</div>
+                ${confirmed.map(s => `
+                  <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid rgba(42,58,82,0.3)">
+                    <div class="avatar" style="width:28px;height:28px;font-size:0.72rem">${s.name.charAt(0).toUpperCase()}</div>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:0.82rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
+                      <div style="font-size:0.7rem;color:var(--text-muted)">${s.roll_number || s.email}</div>
+                    </div>
+                    <span class="badge ${s.attendance_status === 'present' ? 'badge-success' : s.attendance_status === 'absent' ? 'badge-danger' : 'badge-muted'}" style="font-size:0.65rem">
+                      ${s.attendance_status || 'pending'}
+                    </span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            ${waitlisted.length > 0 ? `
+              <div>
+                <div style="font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--info);margin-bottom:0.5rem">Waitlist (${waitlisted.length})</div>
+                ${waitlisted.map(s => `
+                  <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0">
+                    <span style="color:var(--info);font-size:0.75rem;font-weight:600">#${s.waitlist_position}</span>
+                    <div style="flex:1;font-size:0.82rem;color:var(--text-secondary)">${s.name}</div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            ${students.length === 0 ? `
+              <div class="empty-state" style="padding:1rem">
+                <div class="empty-desc" style="font-size:0.8rem">No bookings yet</div>
+              </div>
+            ` : ''}
+
+            <div style="margin-top:0.75rem">
+              <a href="/admin/attendance.html?slot=${slot.id}&date=${date}" class="btn btn-outline btn-sm btn-full">
+                ✅ Mark Attendance
+              </a>
+            </div>
+          </div>
+        `;
+                }).join('');
+            } catch (e) {
+                container.innerHTML = `<div class="empty-state"><div class="empty-title">Error</div><div class="empty-desc">${e.message}</div></div>`;
+            }
+        }
+
+        loadSlots();
+    </script>
+</body>
+
+</html>
