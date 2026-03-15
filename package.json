@@ -9,7 +9,9 @@
     "seed": "node src/database/seed.js"
   },
   "author": "Anudeep",
-  "license": "ISC",
+  "engines": {
+    "node": "20.x"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^9.4.3",
