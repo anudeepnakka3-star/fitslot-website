@@ -1,10 +1,27 @@
 const Database = require('better-sqlite3');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
-const DB_PATH = process.env.DB_PATH || './fitslot.db';
+let DB_PATH = process.env.DB_PATH || path.resolve(__dirname, '../../fitslot.db');
 
-const db = new Database(path.resolve(DB_PATH));
+// Vercel read-only filesystem workaround
+if (process.env.VERCEL) {
+  const tmpPath = '/tmp/fitslot.db';
+  if (!fs.existsSync(tmpPath)) {
+    try {
+      const sourcePath = path.resolve(__dirname, '../../fitslot.db');
+      if (fs.existsSync(sourcePath)) {
+        fs.copyFileSync(sourcePath, tmpPath);
+      }
+    } catch (e) {
+      console.error('Failed to copy SQLite database to writable /tmp directory:', e);
+    }
+  }
+  DB_PATH = tmpPath;
+}
+
+const db = new Database(DB_PATH);
 
 // Enable WAL mode for better concurrency
 db.pragma('journal_mode = WAL');
