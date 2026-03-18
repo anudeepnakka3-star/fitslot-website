@@ -45,9 +45,9 @@
                         <p style="font-size:0.75rem;color:var(--text-muted)" id="today-label">—</p>
                     </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:0.75rem">
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
                     <input type="date" class="form-input" id="date-picker"
-                        style="width:160px;font-size:0.82rem;padding:0.4rem 0.75rem">
+                        style="width:100%;max-width:160px;font-size:0.82rem;padding:0.4rem 0.75rem">
                     <button class="btn btn-outline btn-sm" onclick="loadSlots()">🔄 Refresh</button>
                 </div>
             </header>
@@ -58,8 +58,7 @@
                     <p class="page-subtitle">Live occupancy and student lists for each slot</p>
                 </div>
 
-                <div id="slots-container" class="slots-grid"
-                    style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr))">
+                <div id="slots-container" class="slots-grid">
                     <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted)">
                         <div class="spinner" style="margin:0 auto 1rem"></div>Loading…
                     </div>

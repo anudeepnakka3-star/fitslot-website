@@ -46,9 +46,9 @@
                         <p style="font-size:0.75rem;color:var(--text-muted)" id="today-label">—</p>
                     </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:0.75rem">
+                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
                     <input type="date" class="form-input" id="date-picker"
-                        style="width:160px;font-size:0.82rem;padding:0.4rem 0.75rem">
+                        style="width:100%;max-width:160px;font-size:0.82rem;padding:0.4rem 0.75rem">
                     <button class="btn btn-outline btn-sm" onclick="loadAll()">Refresh</button>
                 </div>
             </header>
@@ -93,7 +93,7 @@
                 </div>
 
                 <!-- Charts Row -->
-                <div style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1.5rem">
+                <div class="admin-charts-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1.5rem">
                     <!-- 7-day trend -->
                     <div class="card">
                         <div class="card-header">

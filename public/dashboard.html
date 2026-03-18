@@ -268,9 +268,9 @@
                     const pct = Math.round((s.confirmed_count / s.capacity) * 100);
                     const isOver = pct >= 80;
                     return `
-              <div style="display:flex;align-items:center;gap:1rem">
+              <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
                 <div style="min-width:110px;font-size:0.85rem;font-weight:600;color:var(--text-primary)">${s.start_time}–${s.end_time}</div>
-                <div style="flex:1">
+                <div style="flex:1;min-width:120px">
                   <div class="progress-wrap">
                     <div class="progress-bar ${pct >= 100 ? 'danger' : isOver ? 'warning' : ''}" style="width:${Math.min(pct, 100)}%"></div>
                   </div>
