@@ -32,6 +32,11 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/users', userRoutes);
 
+// Serve explicit student profile route
+app.get('/student/profile', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'profile.html'));
+});
+
 // SPA fallback
 app.use((req, res, next) => {
   if (!req.path.startsWith('/api')) {

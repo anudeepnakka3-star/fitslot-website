@@ -79,9 +79,10 @@ const api = {
     markRead: (id) => request('PATCH', `/notifications/${id}/read`),
     markAllRead: () => request('PATCH', '/notifications/read-all'),
 
-    // Users (admin)
+    // Users
     getUsers: () => request('GET', '/users'),
     unblockUser: (id) => request('PATCH', `/users/${id}/unblock`),
+    updateProfile: (data) => request('PUT', '/users/profile', data),
 };
 
 window.api = api;

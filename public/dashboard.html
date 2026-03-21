@@ -1,311 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="FitSlot – Student Dashboard">
-    <title>Dashboard – FitSlot</title>
-    <link rel="stylesheet" href="/index.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FitSlot – Student Dashboard">
+  <title>Dashboard – FitSlot</title>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="/js/tailwind-config.js"></script>
+  <link rel="stylesheet" href="/index.css">
+
+  <style>
+    /* Prevent raw tailwind flickering if needed */
+    [x-cloak] { display: none !important; }
+  </style>
 </head>
 
-<body>
-    <div class="app-layout">
-        <!-- Sidebar Backdrop (mobile) -->
-        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+<body class="text-on-surface antialiased bg-surface">
 
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo">
-                <div class="logo-icon">🏋️</div>
-                <div class="logo-text">Fit<span>Slot</span></div>
-            </div>
-            <nav class="sidebar-nav">
-                <span class="nav-section-label">Student</span>
-                <a href="/dashboard.html" class="nav-item active">
-                    <span class="nav-icon">🏠</span> Dashboard
-                </a>
-                <a href="/slots.html" class="nav-item">
-                    <span class="nav-icon">📅</span> Book a Slot
-                </a>
-                <a href="/my-bookings.html" class="nav-item">
-                    <span class="nav-icon">📋</span> My Bookings
-                </a>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="sidebar-user">
-                    <div class="avatar" id="sidebar-avatar">?</div>
-                    <div class="user-info">
-                        <div class="user-name" id="sidebar-name">Loading…</div>
-                        <div class="user-role" id="sidebar-role">student</div>
-                    </div>
-                </div>
-                <button class="btn btn-ghost btn-full btn-sm" data-action="logout">⏻ Sign Out</button>
-            </div>
-        </aside>
-
-        <!-- Main Area -->
-        <div class="main-area">
-            <!-- Topbar -->
-            <header class="topbar">
-                <div style="display:flex;align-items:center;gap:1rem">
-                    <button class="hamburger" id="hamburger">☰</button>
-                    <div>
-                        <h4 style="color:var(--text-primary);font-size:0.95rem">Dashboard</h4>
-                        <p style="font-size:0.75rem;color:var(--text-muted)" id="today-date">Loading…</p>
-                    </div>
-                </div>
-                <div style="display:flex;align-items:center;gap:1rem;position:relative">
-                    <button class="notif-btn" id="notif-btn" title="Notifications">
-                        🔔
-                        <span class="notif-badge" id="notif-badge">0</span>
-                    </button>
-                    <div class="notif-dropdown" id="notif-dropdown">
-                        <div class="notif-header">
-                            <span
-                                style="font-size:0.85rem;font-weight:600;color:var(--text-primary)">Notifications</span>
-                            <button class="btn btn-ghost btn-sm" onclick="markAllRead()">Mark all read</button>
-                        </div>
-                        <div class="notif-list" id="notif-list">
-                            <div class="empty-state" style="padding:2rem">
-                                <div class="empty-desc">No notifications yet</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Content -->
-            <main class="page-content">
-                <!-- Welcome -->
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1 class="page-title">Welcome, <span class="text-accent" id="welcome-name">—</span> 👋</h1>
-                            <p class="page-subtitle">Here's your gym status for today</p>
-                        </div>
-                        <a href="/slots.html" class="btn btn-primary">📅 Book a Slot</a>
-                    </div>
-                </div>
-
-                <!-- KPIs -->
-                <div class="kpi-grid">
-                    <div class="kpi-card" style="--kpi-color: var(--accent)">
-                        <div class="kpi-icon">📊</div>
-                        <div class="kpi-value" id="kpi-slots-available">—</div>
-                        <div class="kpi-label">Slots Available Today</div>
-                    </div>
-                    <div class="kpi-card" style="--kpi-color: var(--info)">
-                        <div class="kpi-icon">📋</div>
-                        <div class="kpi-value" id="kpi-total-bookings">—</div>
-                        <div class="kpi-label">Total Bookings</div>
-                    </div>
-                    <div class="kpi-card" style="--kpi-color: var(--warning)">
-                        <div class="kpi-icon">⚠</div>
-                        <div class="kpi-value" id="kpi-noshows">—</div>
-                        <div class="kpi-label">No-Show Count</div>
-                    </div>
-                    <div class="kpi-card" style="--kpi-color: var(--danger)">
-                        <div class="kpi-icon">📅</div>
-                        <div class="kpi-value" id="kpi-today-booking">—</div>
-                        <div class="kpi-label">Today's Booking</div>
-                    </div>
-                </div>
-
-                <!-- Today's booking card -->
-                <div class="card" style="margin-bottom:1.5rem" id="today-booking-section">
-                    <div class="card-header">
-                        <span class="card-title">📍 Today's Slot</span>
-                        <span class="badge badge-muted" id="today-slot-status">No booking</span>
-                    </div>
-                    <div id="today-slot-details">
-                        <div class="empty-state" style="padding:2rem 1rem">
-                            <div class="empty-icon">🏋️</div>
-                            <div class="empty-title">No slot booked today</div>
-                            <div class="empty-desc" style="margin-bottom:1rem">Reserve your spot before they fill up!
-                            </div>
-                            <a href="/slots.html" class="btn btn-primary btn-sm">Book Now</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Available Slots Preview -->
-                <div class="card">
-                    <div class="card-header">
-                        <span class="card-title">⚡ Today's Slot Availability</span>
-                        <a href="/slots.html" class="btn btn-outline btn-sm">View All</a>
-                    </div>
-                    <div id="slots-preview">
-                        <div style="text-align:center;padding:2rem;color:var(--text-muted)">
-                            <div class="spinner" style="margin:0 auto 1rem"></div>
-                            Loading slots…
-                        </div>
-                    </div>
-                </div>
-            </main>
+  <!-- TopNavBar -->
+  <nav class="fixed top-0 w-full z-50 glass-nav shadow-sm dark:shadow-none">
+    <div class="flex items-center justify-between px-6 py-3 w-full max-w-screen-2xl mx-auto">
+      <div class="flex items-center gap-8">
+        <a href="/dashboard.html" class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg kinetic-gradient text-white flex items-center justify-center text-lg shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">fitness_center</span>
+          </div>
+          <span class="text-xl font-black tracking-tighter text-primary">FitSlot</span>
+        </a>
+        <div class="hidden md:flex items-center gap-6">
+          <a class="text-primary font-bold border-b-2 border-primary py-1 transition-opacity" href="/dashboard.html">Dashboard</a>
+          <a class="text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="/my-bookings.html">My Bookings</a>
+          <a class="text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="/slots.html">Classes</a>
         </div>
+      </div>
+      <div class="flex items-center gap-4 relative">
+        <button class="p-2 hover:bg-surface-container-high transition-colors duration-200 rounded-full relative" id="notif-btn" title="Notifications">
+          <span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+          <span class="absolute top-1 right-1 w-4 h-4 rounded-full bg-error text-[10px] font-bold text-white flex items-center justify-center hidden" id="notif-badge">0</span>
+        </button>
+        
+        <!-- Notif Dropdown -->
+        <div class="absolute top-full right-4 mt-2 w-80 bg-surface-container-lowest border border-outline-variant/30 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] z-50 hidden overflow-hidden" id="notif-dropdown">
+           <div class="px-4 py-3 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-low/50">
+             <span class="text-sm font-bold text-on-surface">Notifications</span>
+             <button class="text-xs text-primary font-semibold hover:underline" onclick="markAllRead()">Mark all read</button>
+           </div>
+           <div class="max-h-80 overflow-y-auto" id="notif-list">
+             <div class="p-6 text-center text-on-surface-variant text-sm">No notifications yet</div>
+           </div>
+        </div>
+
+        <div class="hidden md:flex flex-col items-end mr-2">
+           <span class="text-sm font-bold text-on-surface" id="sidebar-name">Loading...</span>
+           <span class="text-xs text-on-surface-variant uppercase tracking-wider" id="sidebar-role">Student</span>
+        </div>
+        <button class="h-10 w-10 flex items-center justify-center rounded-full bg-surface-container-high kinetic-gradient text-white font-bold cursor-pointer transition-transform active:scale-95" id="sidebar-avatar" onclick="window.location.href='/student/profile'" title="Profile">
+          ?
+        </button>
+        <button class="h-10 w-10 flex items-center justify-center rounded-full bg-error/10 text-error hover:bg-error/20 transition-colors cursor-pointer" data-action="logout" title="Sign Out">
+          <span class="material-symbols-outlined text-[18px]">logout</span>
+        </button>
+      </div>
+    </div>
+    <div class="bg-outline-variant/20 h-[1px]"></div>
+  </nav>
+
+  <main class="pt-24 pb-20 md:pb-12 px-6 md:px-12 max-w-screen-2xl mx-auto min-h-screen">
+    
+    <!-- Header Section -->
+    <header class="mb-10">
+      <p class="label-md font-bold text-primary tracking-[0.05em] mb-2 uppercase" id="today-date">Loading date...</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface mb-3">Welcome, <span id="welcome-name" class="text-primary">—</span> 👋</h1>
+      <p class="text-lg text-on-surface-variant max-w-2xl">Find your kinetic sanctuary. Secure your spot in today's high-performance sessions.</p>
+    </header>
+
+    <!-- KPIs -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+      <div class="bg-surface-container-lowest border border-transparent rounded-xl p-5 shadow-[0px_12px_24px_rgba(26,28,29,0.03)] flex flex-col items-start relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+        <div class="text-2xl mb-2"><span class="material-symbols-outlined text-primary">analytics</span></div>
+        <div class="text-3xl font-black text-on-surface tracking-tight mb-1" id="kpi-slots-available">—</div>
+        <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Slots Available Today</div>
+      </div>
+      
+      <div class="bg-surface-container-lowest border border-transparent rounded-xl p-5 shadow-[0px_12px_24px_rgba(26,28,29,0.03)] flex flex-col items-start relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-info"></div>
+        <div class="text-2xl mb-2"><span class="material-symbols-outlined text-info">fact_check</span></div>
+        <div class="text-3xl font-black text-on-surface tracking-tight mb-1" id="kpi-total-bookings">—</div>
+        <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Total Bookings</div>
+      </div>
+
+      <div class="bg-surface-container-lowest border border-transparent rounded-xl p-5 shadow-[0px_12px_24px_rgba(26,28,29,0.03)] flex flex-col items-start relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-warning"></div>
+        <div class="text-2xl mb-2"><span class="material-symbols-outlined text-warning">warning</span></div>
+        <div class="text-3xl font-black text-on-surface tracking-tight mb-1" id="kpi-noshows">—</div>
+        <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">No-Show Count</div>
+      </div>
+
+      <div class="bg-surface-container-lowest border border-transparent rounded-xl p-5 shadow-[0px_12px_24px_rgba(26,28,29,0.03)] flex flex-col items-start relative overflow-hidden group">
+        <div class="absolute top-0 left-0 w-full h-1 bg-secondary border-t-2 border-secondary"></div>
+        <div class="text-2xl mb-2"><span class="material-symbols-outlined text-secondary">calendar_today</span></div>
+        <div class="text-3xl font-black text-on-surface tracking-tight mb-1" id="kpi-today-booking">—</div>
+        <div class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Today's Booking</div>
+      </div>
     </div>
 
-    <script src="/js/api.js"></script>
-    <script src="/js/auth.js"></script>
-    <script>
-        if (!Auth.requireStudent()) throw new Error('Not authorized');
-
-        const user = Auth.getUser();
-
-        // Set welcome name
-        document.getElementById('welcome-name').textContent = user.name.split(' ')[0];
-        document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-        // Update KPI no-shows
-        document.getElementById('kpi-noshows').textContent = user.no_show_count || 0;
-        if (user.no_show_count >= 3) {
-            document.getElementById('kpi-noshows').style.color = 'var(--danger)';
-        }
-
-        // Notifications
-        const notifBtn = document.getElementById('notif-btn');
-        const notifDropdown = document.getElementById('notif-dropdown');
-        notifBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            notifDropdown.classList.toggle('open');
-        });
-        document.addEventListener('click', () => notifDropdown.classList.remove('open'));
-
-        async function loadNotifications() {
-            try {
-                const data = await api.getNotifications();
-                const badge = document.getElementById('notif-badge');
-                const list = document.getElementById('notif-list');
-
-                if (data.unread > 0) {
-                    badge.textContent = data.unread;
-                    badge.classList.add('visible');
-                }
-
-                if (data.notifications.length === 0) {
-                    list.innerHTML = '<div class="empty-state" style="padding:2rem"><div class="empty-desc">No notifications yet</div></div>';
-                    return;
-                }
-
-                list.innerHTML = data.notifications.map(n => `
-        <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="readNotif(${n.id}, this)">
-          <div class="notif-msg">${n.message}</div>
-          <div class="notif-time">${timeAgo(n.created_at)}</div>
-        </div>
-      `).join('');
-            } catch (e) { console.warn('Notifications error:', e); }
-        }
-
-        async function readNotif(id, el) {
-            try {
-                await api.markRead(id);
-                el.classList.remove('unread');
-            } catch (e) { }
-        }
-
-        async function markAllRead() {
-            try {
-                await api.markAllRead();
-                document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
-                document.getElementById('notif-badge').classList.remove('visible');
-            } catch (e) { }
-        }
-
-        function timeAgo(iso) {
-            const d = new Date(iso);
-            const diff = (Date.now() - d.getTime()) / 1000;
-            if (diff < 60) return 'Just now';
-            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-            return d.toLocaleDateString('en-IN');
-        }
-
-        async function loadDashboard() {
-            try {
-                const [slotsData, bookingsData] = await Promise.all([
-                    api.getSlots(),
-                    api.getBookings({ date: new Date().toLocaleDateString('en-CA') })
-                ]);
-
-                // Available slots
-                const availSlots = slotsData.slots.filter(s => s.available > 0 && s.window_status === 'open');
-                document.getElementById('kpi-slots-available').textContent = availSlots.length;
-
-                // Total bookings ever
-                const allBook = await api.getBookings();
-                document.getElementById('kpi-total-bookings').textContent = allBook.bookings.filter(b => b.status !== 'cancelled').length;
-
-                // Today's booking
-                const todayBooking = bookingsData.bookings.find(b => b.status !== 'cancelled');
-                if (todayBooking) {
-                    document.getElementById('kpi-today-booking').textContent = todayBooking.slot_name;
-                    const statusBadge = { confirmed: 'badge-success', waitlist: 'badge-info', cancelled: 'badge-muted' };
-                    document.getElementById('today-slot-status').className = `badge ${statusBadge[todayBooking.status] || 'badge-muted'}`;
-                    document.getElementById('today-slot-status').textContent = todayBooking.status.toUpperCase();
-
-                    document.getElementById('today-slot-details').innerHTML = `
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;padding-top:0.5rem">
-            <div>
-              <div style="font-size:1.6rem;font-weight:800;color:var(--text-primary)">${todayBooking.start_time} – ${todayBooking.end_time}</div>
-              <div style="color:var(--text-muted);font-size:0.85rem">${todayBooking.slot_name} Slot</div>
-              ${todayBooking.categories ? `<div style="margin-top:0.5rem;font-size:0.8rem;color:var(--accent)">🏋️ ${todayBooking.categories}</div>` : ''}
-              ${todayBooking.attendance_status === 'present' ? '<span class="badge badge-success" style="margin-top:0.5rem">✓ Present</span>' : ''}
-              ${todayBooking.attendance_status === 'absent' ? '<span class="badge badge-danger" style="margin-top:0.5rem">✗ Absent</span>' : ''}
-            </div>
-            ${todayBooking.status === 'confirmed' ? `<button class="btn btn-danger btn-sm" onclick="cancelBooking(${todayBooking.id})">Cancel Booking</button>` : ''}
+    <!-- Main Dashboard Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left Column (Today's Slot) -->
+      <div class="lg:col-span-2 space-y-8">
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0px_24px_48px_rgba(26,28,29,0.04)] overflow-hidden" id="today-booking-section">
+          <div class="px-6 py-4 border-b border-surface-container-low flex items-center justify-between">
+            <h2 class="text-lg font-bold text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary">location_on</span> Today's Slot
+            </h2>
+            <span class="px-3 py-1 bg-surface-variant text-on-surface-variant text-xs font-bold uppercase tracking-wider rounded-full" id="today-slot-status">NO BOOKING</span>
           </div>
-        `;
-                } else {
-                    document.getElementById('kpi-today-booking').textContent = 'None';
-                }
+          <div class="p-6" id="today-slot-details">
+             <div class="text-center py-10">
+               <span class="material-symbols-outlined text-6xl text-outline-variant mb-4 hidden md:inline-block">fitness_center</span>
+               <h3 class="text-xl font-bold text-on-surface mb-2">No slot booked today</h3>
+               <p class="text-on-surface-variant mb-6">Reserve your spot before they fill up! Connect with the sanctuary.</p>
+               <a href="/slots.html" class="inline-flex px-8 py-3 rounded-full kinetic-gradient text-white text-sm font-bold shadow-lg transition-transform active:scale-95">Book Now</a>
+             </div>
+          </div>
+        </div>
+      </div>
 
-                // Slots preview
-                const slotColors = ['open', 'full', 'ended', 'not_yet'];
-                document.getElementById('slots-preview').innerHTML = `
-        <div style="display:flex;flex-direction:column;gap:0.75rem">
-          ${slotsData.slots.map(s => {
-                    const pct = Math.round((s.confirmed_count / s.capacity) * 100);
-                    const isOver = pct >= 80;
-                    return `
-              <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
-                <div style="min-width:110px;font-size:0.85rem;font-weight:600;color:var(--text-primary)">${s.start_time}–${s.end_time}</div>
-                <div style="flex:1;min-width:120px">
-                  <div class="progress-wrap">
-                    <div class="progress-bar ${pct >= 100 ? 'danger' : isOver ? 'warning' : ''}" style="width:${Math.min(pct, 100)}%"></div>
+      <!-- Right Column (Available Slots Preview) -->
+      <div class="lg:col-span-1 space-y-8">
+        <div class="bg-surface-container-lowest rounded-xl shadow-[0px_24px_48px_rgba(26,28,29,0.04)] overflow-hidden">
+          <div class="px-6 py-4 border-b border-surface-container-low flex items-center justify-between">
+            <h2 class="text-lg font-bold text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-info">bolt</span> Slot Pulse
+            </h2>
+            <a href="/slots.html" class="text-xs font-bold text-primary hover:underline uppercase tracking-wider">View All</a>
+          </div>
+          <div class="p-6" id="slots-preview">
+            <div class="text-center py-8 text-on-surface-variant">
+              <div class="spinner border-primary border-t-transparent mx-auto mb-4"></div>
+              Loading availability...
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Bottom Navigation Shell (Mobile Only) -->
+  <div class="md:hidden fixed bottom-0 left-0 right-0 glass-nav px-6 py-3 flex items-center justify-around z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-outline-variant/20">
+    <a class="flex flex-col items-center gap-1 text-primary" href="/dashboard.html">
+      <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+      <span class="text-[10px] font-bold tracking-wide">Dashboard</span>
+    </a>
+    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/slots.html">
+      <span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+      <span class="text-[10px] font-medium tracking-wide">Classes</span>
+    </a>
+    <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/my-bookings.html">
+      <span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+      <span class="text-[10px] font-medium tracking-wide">Bookings</span>
+    </a>
+    <a class="flex flex-col items-center gap-1 text-on-surface-variant cursor-pointer" id="mobile-logout" data-action="logout">
+      <span class="material-symbols-outlined" data-icon="logout">logout</span>
+      <span class="text-[10px] font-medium tracking-wide">Logout</span>
+    </a>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    if (!Auth.requireStudent()) throw new Error('Not authorized');
+
+    const user = Auth.getUser();
+
+    // Set user info
+    document.getElementById('welcome-name').textContent = user.name.split(' ')[0];
+    document.getElementById('sidebar-name').textContent = user.name;
+    document.getElementById('sidebar-avatar').textContent = user.photo_url || user.name.charAt(0).toUpperCase();
+    
+    document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Update KPI no-shows
+    document.getElementById('kpi-noshows').textContent = user.no_show_count || 0;
+    if (user.no_show_count >= 3) {
+      document.getElementById('kpi-noshows').classList.add('text-danger');
+    }
+
+    // Handle Logout
+    document.querySelectorAll('[data-action="logout"]').forEach(btn => {
+      btn.addEventListener('click', () => { Auth.logout(); });
+    });
+
+    // Notifications
+    const notifBtn = document.getElementById('notif-btn');
+    const notifDropdown = document.getElementById('notif-dropdown');
+    notifBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notifDropdown.classList.toggle('hidden');
+    });
+    document.addEventListener('click', () => notifDropdown.classList.add('hidden'));
+
+    async function loadNotifications() {
+      try {
+        const data = await api.getNotifications();
+        const badge = document.getElementById('notif-badge');
+        const list = document.getElementById('notif-list');
+
+        if (data.unread > 0) {
+          badge.textContent = data.unread > 9 ? '9+' : data.unread;
+          badge.classList.remove('hidden');
+        }
+
+        if (data.notifications.length === 0) {
+          list.innerHTML = '<div class="p-6 text-center text-on-surface-variant text-sm">No notifications yet</div>';
+          return;
+        }
+
+        list.innerHTML = data.notifications.map(n => `
+          <div class="px-4 py-3 border-b border-outline-variant/20 hover:bg-surface-container-low cursor-pointer transition-colors ${n.is_read ? '' : 'bg-primary/5'}" onclick="readNotif(${n.id}, this)">
+            <p class="text-sm ${n.is_read ? 'text-on-surface-variant' : 'text-on-surface font-semibold'} leading-snug">${n.message}</p>
+            <p class="text-xs text-outline mt-1">${timeAgo(n.created_at)}</p>
+          </div>
+        `).join('');
+      } catch (e) { console.warn('Notifications error:', e); }
+    }
+
+    async function readNotif(id, el) {
+      try {
+        await api.markRead(id);
+        el.classList.remove('bg-primary/5');
+        const p = el.querySelector('p.text-on-surface');
+        if(p) { p.classList.remove('text-on-surface', 'font-semibold'); p.classList.add('text-on-surface-variant'); }
+      } catch (e) { }
+    }
+
+    async function markAllRead() {
+      try {
+        await api.markAllRead();
+        document.getElementById('notif-badge').classList.add('hidden');
+        loadNotifications(); // reload to clear styles
+      } catch (e) { }
+    }
+
+    function timeAgo(iso) {
+      const d = new Date(iso);
+      const diff = (Date.now() - d.getTime()) / 1000;
+      if (diff < 60) return 'Just now';
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+      return d.toLocaleDateString('en-IN');
+    }
+
+    async function loadDashboard() {
+      try {
+        const [slotsData, bookingsData] = await Promise.all([
+            api.getSlots(),
+            api.getBookings({ date: new Date().toLocaleDateString('en-CA') })
+        ]);
+
+        // Available slots
+        const availSlots = slotsData.slots.filter(s => s.available > 0 && s.window_status === 'open');
+        document.getElementById('kpi-slots-available').textContent = availSlots.length;
+
+        // Total bookings ever
+        const allBook = await api.getBookings();
+        document.getElementById('kpi-total-bookings').textContent = allBook.bookings.filter(b => b.status !== 'cancelled').length;
+
+        // Today's booking
+        const todayBooking = bookingsData.bookings.find(b => b.status !== 'cancelled');
+        if (todayBooking) {
+            document.getElementById('kpi-today-booking').textContent = todayBooking.slot_name;
+            
+            const badges = {
+              confirmed: 'bg-primary/10 text-primary',
+              waitlist: 'bg-secondary/10 text-secondary',
+              cancelled: 'bg-outline-variant/20 text-outline-variant'
+            };
+            
+            const statusEl = document.getElementById('today-slot-status');
+            statusEl.className = `px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${badges[todayBooking.status] || badges.cancelled}`;
+            statusEl.textContent = todayBooking.status.toUpperCase();
+
+            document.getElementById('today-slot-details').innerHTML = `
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 py-2">
+                <div>
+                  <div class="text-3xl font-black text-on-surface tracking-tight mb-1">${todayBooking.start_time} – ${todayBooking.end_time}</div>
+                  <div class="text-on-surface-variant font-medium flex items-center gap-2 mb-3">
+                    <span class="material-symbols-outlined text-sm">event_seat</span> ${todayBooking.slot_name} Slot ${todayBooking.slot_name.toLowerCase().includes('demo') ? '<span class="text-[9px] text-[#F57F17] bg-[#FFF9C4]/80 border border-[#F57F17]/30 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">[DEMO]</span>' : ''}
+                  </div>
+                  <div class="flex flex-wrap items-center gap-2 mt-2">
+                    ${todayBooking.categories ? `<span class="px-2 py-1 bg-surface-container-high rounded-full text-xs font-bold text-on-surface uppercase tracking-wider">${todayBooking.categories}</span>` : ''}
+                    ${todayBooking.attendance_status === 'present' ? '<span class="px-2 py-1 bg-primary/10 rounded-full text-xs font-bold text-primary uppercase tracking-wider"><span class="w-2 h-2 rounded-full bg-primary inline-block mr-1"></span>Present</span>' : ''}
+                    ${todayBooking.attendance_status === 'absent' ? '<span class="px-2 py-1 bg-error-container rounded-full text-xs font-bold text-error uppercase tracking-wider"><span class="w-2 h-2 rounded-full bg-error inline-block mr-1"></span>Absent</span>' : ''}
                   </div>
                 </div>
-                <div style="min-width:80px;text-align:right;font-size:0.78rem;color:var(--text-muted)">${s.confirmed_count}/${s.capacity} filled</div>
-                <div style="min-width:60px;text-align:right">
-                  ${s.user_booking && s.user_booking.status === 'confirmed' ? '<span class="badge badge-success">Booked</span>'
-                            : s.user_booking && s.user_booking.status === 'waitlist' ? '<span class="badge badge-info">Waitlist</span>'
-                                : s.window_status === 'ended' ? '<span class="badge badge-muted">Ended</span>'
-                                    : s.available > 0 ? '<span class="badge badge-success">Open</span>'
-                                        : '<span class="badge badge-warning">Full</span>'}
-                </div>
+                ${todayBooking.status === 'confirmed' ? `
+                  <button class="w-full md:w-auto px-6 py-2 rounded-full border-2 border-outline-variant/50 text-on-surface-variant font-bold hover:border-error hover:text-error hover:bg-error-container/50 transition-colors" onclick="cancelBooking(${todayBooking.id})">Cancel Booking</button>
+                ` : ''}
               </div>
             `;
-                }).join('')}
-        </div>
-      `;
-            } catch (e) {
-                console.error(e);
-            }
+        } else {
+            document.getElementById('kpi-today-booking').textContent = 'None';
         }
 
-        async function cancelBooking(id) {
-            if (!confirm('Cancel this booking?')) return;
-            try {
-                await api.cancelBooking(id);
-                location.reload();
-            } catch (e) {
-                alert(e.message);
-            }
-        }
+        // Slots preview
+        document.getElementById('slots-preview').innerHTML = `
+          <div class="flex flex-col gap-4">
+            ${slotsData.slots.map(s => {
+                const pct = Math.round((s.confirmed_count / s.capacity) * 100);
+                const isOver = pct >= 80;
+                
+                let badgeHTML = '';
+                if(s.user_booking && s.user_booking.status === 'confirmed') badgeHTML = '<span class="text-xs font-bold text-primary">Booked</span>';
+                else if(s.user_booking && s.user_booking.status === 'waitlist') badgeHTML = '<span class="text-xs font-bold text-secondary">Waitlist</span>';
+                else if(s.window_status === 'ended') badgeHTML = '<span class="text-xs font-bold text-outline">Ended</span>';
+                else if(s.available > 0) badgeHTML = '<span class="text-xs font-bold text-primary">Open</span>';
+                else badgeHTML = '<span class="text-xs font-bold text-warning">Full</span>';
 
-        loadDashboard();
-        loadNotifications();
-    </script>
+                let barColor = 'from-[#004ac6] to-[#2563eb]'; // kinetic-gradient
+                if(pct >= 100) barColor = 'from-error to-error-container';
+                else if(isOver) barColor = 'from-tertiary to-tertiary-container';
+
+                return `
+                  <div class="flex items-center gap-3 w-full">
+                    <div class="w-24 text-sm font-bold text-on-surface whitespace-nowrap">${s.start_time}</div>
+                    <div class="flex-1 h-2 bg-surface-container-high rounded-full overflow-hidden">
+                      <div class="h-full rounded-full bg-gradient-to-r ${barColor} shadow-sm" style="width:${Math.min(pct, 100)}%"></div>
+                    </div>
+                    <div class="w-16 text-right text-xs font-medium text-on-surface-variant whitespace-nowrap">${s.confirmed_count}/${s.capacity}</div>
+                    <div class="w-14 text-right">${badgeHTML}</div>
+                  </div>
+                `;
+            }).join('')}
+          </div>
+        `;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function cancelBooking(id) {
+        if (!confirm('Cancel this booking?')) return;
+        try {
+            await api.cancelBooking(id);
+            location.reload();
+        } catch (e) {
+            alert(e.message);
+        }
+    }
+
+    loadDashboard();
+    loadNotifications();
+  </script>
 </body>
-
 </html>

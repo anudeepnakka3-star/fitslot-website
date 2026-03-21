@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FitSlot Admin - Analytics</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#dadadb",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#b4c5ff",
+                        "outline": "#737686",
+                        "on-background": "#1a1c1d",
+                        "on-secondary-fixed-variant": "#404754",
+                        "on-surface-variant": "#434655",
+                        "surface-container-high": "#e8e8e9",
+                        "inverse-on-surface": "#f0f1f2",
+                        "secondary-fixed-dim": "#c0c7d6",
+                        "tertiary-container": "#bc4800",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#00174b",
+                        "tertiary-fixed": "#ffdbcd",
+                        "primary": "#004ac6",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed": "#360f00",
+                        "surface": "#f9f9fa",
+                        "secondary": "#585f6c",
+                        "on-secondary-fixed": "#151c27",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-primary": "#ffffff",
+                        "surface-tint": "#0053db",
+                        "secondary-fixed": "#dce2f3",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "tertiary": "#943700",
+                        "secondary-container": "#dce2f3",
+                        "error": "#ba1a1a",
+                        "surface-variant": "#e2e2e3",
+                        "inverse-surface": "#2f3132",
+                        "outline-variant": "#c3c6d7",
+                        "on-secondary": "#ffffff",
+                        "background": "#f9f9fa",
+                        "on-surface": "#1a1c1d",
+                        "on-primary-container": "#eeefff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "surface-container": "#eeeeef",
+                        "surface-container-highest": "#e2e2e3",
+                        "on-secondary-container": "#5e6572",
+                        "surface-bright": "#f9f9fa",
+                        "primary-fixed": "#dbe1ff",
+                        "on-tertiary-container": "#ffede6",
+                        "primary-container": "#2563eb",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "surface-container-low": "#f3f3f4"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased">
+<div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col md:flex-row">
+<!-- Sidebar -->
+<div class="hidden md:flex flex-col w-[280px] bg-surface border-r border-surface-container-highest shrink-0 h-screen sticky top-0">
+<div class="flex items-center gap-4 px-6 py-8 border-b border-surface-container-highest">
+<div class="size-8 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-on-surface text-xl font-bold tracking-tight">FitSlot Admin</h2>
+</div>
+<div class="flex flex-col flex-1 p-4 gap-2 overflow-y-auto">
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="text-sm font-medium">Bookings</span>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-surface-container-low text-primary cursor-pointer relative">
+<span class="material-symbols-outlined" data-icon="bar_chart" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
+<span class="text-sm font-medium">Analytics</span>
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"></div>
+</div>
+<div class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-sm font-medium">Settings</span>
+</div>
+</div>
+<div class="p-4 border-t border-surface-container-highest">
+<div class="flex items-center gap-3">
+<div class="size-10 rounded-full bg-surface-container-high bg-cover bg-center" data-alt="Admin user profile picture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCQybmK3wFZNST7Q6w0gJxHiiHGbjI_2ZEwM48Wodtx0YWtsd0D2yXgdFs5pYnDVip2EHqrgp5c_EbNMvleOLjATPuMyLZ6Yw5D3hqliuIa7KAnA-_vNfDu2nKQ7I238McJehL2_rJ82c7pvOzAdd4zRQvu2l6Dsrgxcg_yNDbq92s7wfH_bEa1Xttro_xsRa4nVeEtdjQMbJBGXQ0koEVDogEMUwjREJIy8wclM64rt9NfRy7YMWgqtcu-Bw5XlrHfGytnvXvMqsQ');"></div>
+<div class="flex flex-col">
+<span class="text-sm font-medium text-on-surface">Admin User</span>
+<span class="text-xs text-on-surface-variant">admin@fitslot.com</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="flex flex-1 flex-col h-full bg-surface-container-low">
+<!-- Mobile Header -->
+<header class="md:hidden flex items-center justify-between px-4 py-4 bg-surface border-b border-surface-container-highest sticky top-0 z-10">
+<div class="flex items-center gap-3">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-on-surface text-lg font-bold tracking-tight">FitSlot Admin</h2>
+</div>
+<button class="text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</header>
+<main class="flex-1 p-6 md:p-10 lg:p-12 overflow-y-auto">
+<div class="max-w-[1200px] mx-auto flex flex-col gap-10">
+<!-- Page Header -->
+<div class="flex flex-col gap-2">
+<h1 class="text-on-surface text-3xl md:text-4xl font-bold tracking-tight font-headline">Analytics Dashboard</h1>
+<p class="text-on-surface-variant text-base">Booking trends and slot distribution</p>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant text-sm font-medium">Total Bookings</span>
+<span class="material-symbols-outlined text-primary" data-icon="event_available">event_available</span>
+</div>
+<div>
+<span class="text-3xl font-bold text-on-surface tracking-tight">1,245</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-tertiary-container text-sm font-medium flex items-center bg-tertiary-fixed/30 px-2 py-1 rounded-full"><span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span> 12%</span>
+<span class="text-on-surface-variant text-xs">vs last month</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant text-sm font-medium">Active Users</span>
+<span class="material-symbols-outlined text-primary" data-icon="group">group</span>
+</div>
+<div>
+<span class="text-3xl font-bold text-on-surface tracking-tight">850</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-tertiary-container text-sm font-medium flex items-center bg-tertiary-fixed/30 px-2 py-1 rounded-full"><span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span> 5%</span>
+<span class="text-on-surface-variant text-xs">vs last month</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<span class="text-on-surface-variant text-sm font-medium">Revenue</span>
+<span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+</div>
+<div>
+<span class="text-3xl font-bold text-on-surface tracking-tight">$12,400</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-tertiary-container text-sm font-medium flex items-center bg-tertiary-fixed/30 px-2 py-1 rounded-full"><span class="material-symbols-outlined text-[16px]" data-icon="trending_up">trending_up</span> 15%</span>
+<span class="text-on-surface-variant text-xs">vs last month</span>
+</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Bar Chart: Booking Trends -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-6 lg:col-span-2">
+<div class="flex justify-between items-center">
+<h3 class="text-lg font-semibold text-on-surface">Weekly Booking Trends</h3>
+<div class="flex items-center gap-2 bg-surface-container-high rounded-md p-1">
+<button class="px-3 py-1 text-xs font-medium bg-surface-container-lowest text-on-surface rounded shadow-sm">Week</button>
+<button class="px-3 py-1 text-xs font-medium text-on-surface-variant hover:text-on-surface rounded">Month</button>
+</div>
+</div>
+<!-- Minimalist Bar Chart Visualization (CSS) -->
+<div class="h-64 flex items-end gap-4 justify-between pt-4 border-b border-surface-container-highest pb-2 relative">
+<!-- Y-Axis Lines (Background) -->
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none pb-8 text-xs text-on-surface-variant/50">
+<div class="border-b border-surface-container-highest/50 w-full flex justify-end pr-2 h-0"><span>200</span></div>
+<div class="border-b border-surface-container-highest/50 w-full flex justify-end pr-2 h-0"><span>150</span></div>
+<div class="border-b border-surface-container-highest/50 w-full flex justify-end pr-2 h-0"><span>100</span></div>
+<div class="border-b border-surface-container-highest/50 w-full flex justify-end pr-2 h-0"><span>50</span></div>
+<div class="w-full flex justify-end pr-2 h-0"><span>0</span></div>
+</div>
+<!-- Bars -->
+<div class="w-full flex justify-around items-end h-[calc(100%-2rem)] z-10 px-4">
+<div class="flex flex-col items-center gap-2 group w-full max-w-[40px]">
+<div class="w-full bg-primary-container/20 rounded-t-md h-[40%] relative group-hover:bg-primary-container transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">80</div>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Mon</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full max-w-[40px]">
+<div class="w-full bg-primary-container/20 rounded-t-md h-[65%] relative group-hover:bg-primary-container transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">130</div>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Tue</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full max-w-[40px]">
+<div class="w-full bg-primary-container/20 rounded-t-md h-[55%] relative group-hover:bg-primary-container transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">110</div>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Wed</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full max-w-[40px]">
+<div class="w-full bg-primary-container/20 rounded-t-md h-[85%] relative group-hover:bg-primary-container transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">170</div>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Thu</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full max-w-[40px]">
+<div class="w-full bg-primary-container/20 rounded-t-md h-[95%] relative group-hover:bg-primary-container transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">190</div>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Fri</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full max-w-[40px]">
+<div class="w-full bg-primary-container/20 rounded-t-md h-[50%] relative group-hover:bg-primary-container transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">100</div>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Sat</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full max-w-[40px]">
+<div class="w-full bg-primary-container/20 rounded-t-md h-[35%] relative group-hover:bg-primary-container transition-colors">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">70</div>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">Sun</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Pie Chart (Simulated): Class Distribution -->
+<div class="bg-surface-container-lowest rounded-xl p-6 flex flex-col gap-6">
+<h3 class="text-lg font-semibold text-on-surface">Class Distribution</h3>
+<div class="flex-1 flex flex-col justify-center items-center gap-8">
+<!-- Minimalist Pie/Donut Chart via CSS Conic Gradient -->
+<div class="size-48 rounded-full relative flex items-center justify-center" style="background: conic-gradient(
+                                            theme('colors.primary-container') 0% 45%, 
+                                            theme('colors.tertiary-container') 45% 75%, 
+                                            theme('colors.secondary-container') 75% 100%
+                                         );">
+<!-- Donut Hole -->
+<div class="size-32 bg-surface-container-lowest rounded-full flex flex-col items-center justify-center">
+<span class="text-2xl font-bold text-on-surface">1.2k</span>
+<span class="text-xs text-on-surface-variant">Total Classes</span>
+</div>
+</div>
+<!-- Legend -->
+<div class="w-full flex flex-col gap-3">
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<div class="size-3 rounded-full bg-primary-container"></div>
+<span class="text-on-surface-variant">Strength &amp; Cardio</span>
+</div>
+<span class="font-medium text-on-surface">45%</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<div class="size-3 rounded-full bg-tertiary-container"></div>
+<span class="text-on-surface-variant">Yoga &amp; Pilates</span>
+</div>
+<span class="font-medium text-on-surface">30%</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<div class="flex items-center gap-2">
+<div class="size-3 rounded-full bg-secondary-container"></div>
+<span class="text-on-surface-variant">CrossFit</span>
+</div>
+<span class="font-medium text-on-surface">25%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+</body></html>

@@ -5,125 +5,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="FitSlot – My Bookings">
-    <title>My Bookings – FitSlot</title>
+    <title>My Bookings | FitSlot</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="/js/tailwind-config.js"></script>
     <link rel="stylesheet" href="/index.css">
 </head>
 
-<body>
-    <div class="app-layout">
-        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo">
-                <div class="logo-icon">🏋️</div>
-                <div class="logo-text">Fit<span>Slot</span></div>
-            </div>
-            <nav class="sidebar-nav">
-                <span class="nav-section-label">Student</span>
-                <a href="/dashboard.html" class="nav-item"><span class="nav-icon">🏠</span> Dashboard</a>
-                <a href="/slots.html" class="nav-item"><span class="nav-icon">📅</span> Book a Slot</a>
-                <a href="/my-bookings.html" class="nav-item active"><span class="nav-icon">📋</span> My Bookings</a>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="sidebar-user">
-                    <div class="avatar" id="sidebar-avatar">?</div>
-                    <div class="user-info">
-                        <div class="user-name" id="sidebar-name">—</div>
-                        <div class="user-role" id="sidebar-role">student</div>
-                    </div>
-                </div>
-                <button class="btn btn-ghost btn-full btn-sm" data-action="logout">⏻ Sign Out</button>
-            </div>
-        </aside>
+<body class="bg-surface text-on-surface">
 
-        <div class="main-area">
-            <header class="topbar">
-                <div style="display:flex;align-items:center;gap:1rem">
-                    <button class="hamburger" id="hamburger">☰</button>
-                    <h4 style="color:var(--text-primary);font-size:0.95rem">My Bookings</h4>
-                </div>
-            </header>
-
-            <main class="page-content">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1 class="page-title">My Bookings</h1>
-                            <p class="page-subtitle">History of all your gym slot reservations</p>
-                        </div>
-                        <a href="/slots.html" class="btn btn-primary">📅 Book New Slot</a>
-                    </div>
-                </div>
-
-                <div class="alert alert-error" id="alert-error"></div>
-                <div class="alert alert-success" id="alert-success"></div>
-
-                <!-- Tabs -->
-                <div class="tabs">
-                    <button class="tab-btn active" id="tab-upcoming" onclick="switchTab('upcoming')">Upcoming</button>
-                    <button class="tab-btn" id="tab-past" onclick="switchTab('past')">Past</button>
-                    <button class="tab-btn" id="tab-all" onclick="switchTab('all')">All</button>
-                </div>
-
-                <div class="card" style="padding:0">
-                    <div class="table-wrap">
-                        <table id="bookings-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Slot</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                    <th>Attendance</th>
-                                    <th>Categories</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="bookings-tbody">
-                                <tr>
-                                    <td colspan="7" style="text-align:center;padding:3rem">
-                                        <div class="spinner" style="margin:0 auto 1rem"></div>Loading…
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+    <!-- Sidebar Navigation Shell -->
+    <aside class="h-screen w-0 md:w-64 fixed left-0 top-0 border-r border-outline-variant/20 bg-surface-container-low hidden md:flex flex-col z-50 transition-all">
+        <div class="px-8 py-6 mb-4">
+            <h1 class="text-xl font-black text-on-surface tracking-tight">FitSlot</h1>
+            <p class="text-xs font-bold text-on-surface-variant tracking-wider uppercase mt-1">Student Portal</p>
         </div>
+        <nav class="flex flex-col gap-1 px-4 h-full">
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/dashboard.html">
+                <span class="material-symbols-outlined text-lg" data-icon="dashboard">dashboard</span>
+                <span class="text-sm font-bold">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/slots.html">
+                <span class="material-symbols-outlined text-lg" data-icon="event_available">event_available</span>
+                <span class="text-sm font-bold">Book a Slot</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-primary bg-primary/10 rounded-xl transition-all" href="/my-bookings.html">
+                <span class="material-symbols-outlined text-lg" data-icon="list_alt">list_alt</span>
+                <span class="text-sm font-bold">My Bookings</span>
+            </a>
+        </nav>
+        <div class="mt-auto p-4 border-t border-outline-variant/10">
+            <div class="flex items-center gap-3 px-4 py-3 mb-2 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20">
+                <button class="w-8 h-8 rounded-full kinetic-gradient flex items-center justify-center text-white font-bold cursor-pointer transition-transform active:scale-95" id="sidebar-avatar" onclick="window.location.href='/student/profile'" title="Profile">?</button>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-bold text-on-surface truncate" id="sidebar-name">—</p>
+                    <p class="text-xs text-on-surface-variant uppercase tracking-wider" id="sidebar-role">student</p>
+                </div>
+            </div>
+            <button class="w-full flex justify-center items-center py-2.5 px-4 bg-error/10 text-error rounded-xl font-bold text-sm hover:bg-error/20 transition-all cursor-pointer" data-action="logout">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <main class="md:ml-64 min-h-screen pb-20">
+        <!-- Top Header Anchor -->
+        <header class="sticky top-0 z-40 glass-nav px-6 md:px-12 py-5 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-outline-variant/10">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-on-surface" id="page-title">My Bookings</h2>
+                <p class="text-on-surface-variant text-sm mt-1 hidden md:block">History of all your gym slot reservations</p>
+            </div>
+            <a href="/slots.html" class="px-5 py-2.5 bg-primary text-on-primary font-bold rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">add</span> <span class="hidden sm:inline">New Booking</span>
+            </a>
+        </header>
+
+        <div class="px-6 md:px-12 mt-8 max-w-6xl mx-auto">
+            <div id="alert-error" class="hidden px-4 py-3 rounded-lg bg-error-container text-error font-medium mb-6 flex items-center gap-2 shadow-sm border border-error/20"></div>
+            <div id="alert-success" class="hidden px-4 py-3 rounded-lg bg-[#b4c5ff] text-[#00174b] font-medium mb-6 flex items-center gap-2 shadow-sm border border-primary/20"></div>
+
+            <!-- Tabs -->
+            <div class="flex gap-2 mb-8 bg-surface-container-low p-1.5 rounded-xl w-full max-w-md mx-auto md:mx-0 border border-outline-variant/20">
+                <button class="flex-1 py-2 text-sm font-bold rounded-lg transition-all focus:outline-none" id="tab-upcoming" onclick="switchTab('upcoming')">Upcoming</button>
+                <button class="flex-1 py-2 text-sm font-bold rounded-lg transition-all focus:outline-none" id="tab-past" onclick="switchTab('past')">Past</button>
+                <button class="flex-1 py-2 text-sm font-bold rounded-lg transition-all focus:outline-none" id="tab-all" onclick="switchTab('all')">All</button>
+            </div>
+
+            <!-- Content Area -->
+            <div id="bookings-container" class="space-y-4">
+                <div class="py-20 text-center text-on-surface-variant">
+                    <div class="spinner border-primary border-t-transparent mx-auto mb-4" style="width:30px;height:30px;border-width:3px;"></div>
+                    Loading your bookings...
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Mobile Nav -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 glass-nav px-6 py-3 flex items-center justify-around z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-outline-variant/20">
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/dashboard.html">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="text-[10px] font-medium tracking-wide">Dashboard</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/slots.html">
+            <span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+            <span class="text-[10px] font-medium tracking-wide">Slots</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-primary" href="/my-bookings.html">
+            <span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+            <span class="text-[10px] font-bold tracking-wide">Bookings</span>
+        </a>
     </div>
 
-    <!-- ═══ Cancel Confirmation Modal ════════════════════════════════ -->
-    <div class="modal-overlay" id="cancel-modal">
-        <div class="modal" style="max-width:420px">
-            <div class="modal-header">
-                <h3 style="color:var(--danger)">Cancel Booking</h3>
-                <button class="modal-close" onclick="closeCancelModal()">✕</button>
-            </div>
+    <!-- Cancel Confirmation Modal -->
+    <div id="cancel-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-4 transition-opacity">
+        <div class="bg-surface-container-lowest rounded-3xl shadow-[0_24px_48px_rgba(0,0,0,0.2)] w-full max-w-sm overflow-hidden border border-outline-variant/20 transform transition-all scale-95" id="cancel-modal-content">
+            <div class="p-6 md:p-8">
+                <div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center text-error mb-6">
+                    <span class="material-symbols-outlined text-[24px]">cancel</span>
+                </div>
+                
+                <h3 class="text-xl font-black text-on-surface mb-2">Cancel Booking</h3>
+                <p class="text-on-surface-variant text-sm mb-6">Are you sure you want to cancel this booking?</p>
+                
+                <div id="cancel-booking-info" class="p-4 bg-surface-container-low rounded-xl mb-6 border border-outline-variant/20 border-l-4 border-l-error">
+                </div>
 
-            <p style="color:var(--text-secondary);margin-bottom:1rem;font-size:0.9rem">
-                Are you sure you want to cancel this booking?
-            </p>
+                <p class="text-xs text-on-surface-variant mb-8 bg-surface-container-highest/50 p-3 rounded-lg">
+                    <span class="font-bold">Note:</span> Cancellations must be made at least 10 minutes before the slot starts. Waitlisted students will be automatically promoted.
+                </p>
 
-            <div id="cancel-booking-info" style="padding:0.9rem 1rem;background:var(--bg-card);border-radius:var(--radius-md);
-                margin-bottom:1rem;border-left:3px solid var(--danger)">
-            </div>
-
-            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:1.5rem">
-                Note: Cancellations must be made at least 10 minutes before the slot starts.
-                Waitlisted students will be automatically promoted.
-            </p>
-
-            <div style="display:flex;gap:0.75rem">
-                <button class="btn btn-outline btn-full" onclick="closeCancelModal()">
-                    No, Keep It
-                </button>
-                <button class="btn btn-full" id="confirm-cancel-btn" onclick="doCancel()"
-                    style="background:var(--danger);color:#fff;border:none;">
-                    <span id="cancel-btn-text">Yes, Cancel Booking</span>
-                    <div class="spinner" id="cancel-spinner"
-                        style="display:none;width:16px;height:16px;border-color:#fff;border-top-color:transparent;">
-                    </div>
-                </button>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button class="w-full py-3 px-4 border border-outline-variant/50 text-on-surface font-bold rounded-xl hover:bg-surface-container-low transition-colors active:scale-95" onclick="closeCancelModal()">
+                        No, Keep it
+                    </button>
+                    <button id="confirm-cancel-btn" class="w-full py-3 px-4 bg-error text-on-error font-bold rounded-xl shadow-md hover:shadow-lg hover:opacity-90 transition-all active:scale-95 flex items-center justify-center" onclick="doCancel()">
+                        <span id="cancel-btn-text">Yes, Cancel</span>
+                        <div class="spinner border-white border-t-transparent hidden" id="cancel-spinner" style="width:18px;height:18px;border-width:2px;margin:0;"></div>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -133,88 +135,186 @@
     <script>
         if (!Auth.requireStudent()) throw new Error('Not authorized');
 
+        const user = Auth.getUser();
+        document.getElementById('sidebar-name').textContent = user.name || 'User';
+        document.getElementById('sidebar-avatar').textContent = user.photo_url || (user.name || '?').charAt(0).toUpperCase();
+        
+        document.querySelectorAll('[data-action="logout"]').forEach(el => {
+            el.addEventListener('click', () => Auth.logout());
+        });
+
         let allBookings = [];
         let pendingCancelId = null;
+        let activeTab = 'upcoming';
         const today = new Date().toLocaleDateString('en-CA');
 
         function showAlert(type, msg) {
-            ['error', 'success'].forEach(t => document.getElementById(`alert-${t}`).classList.remove('show'));
-            const el = document.getElementById(`alert-${type}`);
-            el.textContent = (type === 'error' ? '⚠ ' : '✓ ') + msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 5000);
+            ['alert-error', 'alert-success'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden');
+            });
+            const el = document.getElementById(type === 'error' ? 'alert-error' : 'alert-success');
+            el.innerHTML = `<span class="material-symbols-outlined text-[20px]">${type === 'error' ? 'error' : 'check_circle'}</span> ${msg}`;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
         }
 
         function switchTab(tab) {
-            ['upcoming', 'past', 'all'].forEach(t =>
-                document.getElementById(`tab-${t}`).classList.toggle('active', t === tab));
+            activeTab = tab;
+            ['upcoming', 'past', 'all'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tab) {
+                    btn.classList.add('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+                    btn.classList.remove('text-on-surface-variant');
+                } else {
+                    btn.classList.remove('bg-surface-container-lowest', 'text-primary', 'shadow-sm');
+                    btn.classList.add('text-on-surface-variant', 'hover:text-on-surface');
+                }
+            });
+            
             let filtered;
             if (tab === 'upcoming') filtered = allBookings.filter(b => b.date >= today && b.status !== 'cancelled');
             else if (tab === 'past') filtered = allBookings.filter(b => b.date < today);
             else filtered = allBookings;
-            renderTable(filtered);
+            renderList(filtered);
         }
-
-        const statusBadge = { confirmed: 'badge-success', waitlist: 'badge-info', cancelled: 'badge-muted' };
-        const attendanceBadge = { present: 'badge-success', absent: 'badge-danger', pending: 'badge-muted' };
 
         function formatDate(dateStr) {
-            return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-IN',
-                { weekday: 'short', day: '2-digit', month: 'short' });
+            return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-IN', { weekday: 'short', day: '2-digit', month: 'short', year:'numeric' });
         }
 
-        function renderTable(bookings) {
-            const tbody = document.getElementById('bookings-tbody');
+        const icons = ['fitness_center', 'pool', 'directions_run', 'sports_martial_arts', 'sports_gymnastics', 'self_improvement'];
+        function getIconForSlot(slotName) {
+            const low = slotName.toLowerCase();
+            if (low.includes('cardio') || low.includes('run')) return 'directions_run';
+            if (low.includes('pool') || low.includes('swim')) return 'pool';
+            if (low.includes('yoga') || low.includes('stretch')) return 'self_improvement';
+            return 'fitness_center';
+        }
+
+        function renderList(bookings) {
+            const container = document.getElementById('bookings-container');
+            
             if (!bookings.length) {
-                tbody.innerHTML = `<tr><td colspan="7">
-        <div class="empty-state">
-          <div class="empty-icon">📋</div>
-          <div class="empty-title">No bookings found</div>
-          <div class="empty-desc">Your bookings will appear here</div>
-        </div></td></tr>`;
+                container.innerHTML = `
+                <div class="py-24 text-center bg-surface-container-lowest rounded-2xl border border-dashed border-outline-variant/30 flex flex-col items-center justify-center shadow-sm">
+                    <span class="material-symbols-outlined text-6xl text-outline-variant mb-4 opacity-50">event_busy</span>
+                    <h3 class="text-xl font-bold text-on-surface mb-2">No bookings found</h3>
+                    <p class="text-on-surface-variant">Your ${activeTab === 'past' ? 'past ' : ''}bookings will appear here.</p>
+                </div>`;
                 return;
             }
-            tbody.innerHTML = bookings.map(b => {
+
+            container.innerHTML = `<div class="${activeTab === 'upcoming' ? 'grid grid-cols-1 lg:grid-cols-2 gap-6' : 'space-y-4'}">
+            ${bookings.map(b => {
                 const isPast = b.date < today;
                 const canCancel = (b.status === 'confirmed' || b.status === 'waitlist') && !isPast;
                 const attendSt = b.attendance_status || 'pending';
-                return `
-        <tr>
-          <td class="td-primary">${formatDate(b.date)}</td>
-          <td class="td-primary">${b.slot_name}</td>
-          <td>${b.start_time} – ${b.end_time}</td>
-          <td><span class="badge ${statusBadge[b.status] || 'badge-muted'}">${b.status}</span></td>
-          <td>
-            ${b.status !== 'cancelled'
-                        ? `<span class="badge ${attendanceBadge[attendSt]}">${attendSt}</span>`
-                        : '–'}
-          </td>
-          <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:0.8rem">
-            ${b.categories || '–'}
-          </td>
-          <td>
-            ${canCancel
-                        ? `<button class="btn btn-danger btn-sm"
-                  onclick="openCancelModal(${b.id}, '${b.start_time}', '${b.end_time}', '${b.slot_name}')">
-                  ✕ Cancel</button>`
-                        : '–'}
-          </td>
-        </tr>`;
-            }).join('');
+                const icon = getIconForSlot(b.slot_name);
+
+                let statusBadge = '';
+                if (b.status === 'confirmed') statusBadge = '<div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(0,74,198,0.5)]"></div><span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Confirmed</span></div>';
+                else if (b.status === 'waitlist') statusBadge = '<div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-tertiary"></div><span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Waitlist #'+b.waitlist_position+'</span></div>';
+                else if (b.status === 'cancelled') statusBadge = '<div class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-error"></div><span class="text-[10px] font-bold uppercase tracking-widest text-error">Cancelled</span></div>';
+                
+                let attHtml = '';
+                if(isPast && b.status !== 'cancelled') {
+                    if (attendSt === 'present') attHtml = '<div class="bg-primary/10 px-3 py-1.5 rounded-md"><span class="text-[10px] font-bold uppercase tracking-widest text-primary">Present</span></div>';
+                    else if (attendSt === 'absent') attHtml = '<div class="bg-error/10 px-3 py-1.5 rounded-md"><span class="text-[10px] font-bold uppercase tracking-widest text-error">Absent</span></div>';
+                    else attHtml = '<div class="bg-surface-container px-3 py-1.5 rounded-md"><span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Processing</span></div>';
+                }
+
+                if (activeTab === 'upcoming') {
+                    // Card layout for upcoming
+                    return `
+                    <div class="bg-surface-container-lowest rounded-2xl shadow-[0px_12px_24px_rgba(26,28,29,0.03)] p-6 border border-outline-variant/10 hover:border-outline-variant/30 transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-4">
+                                <span class="bg-surface-container-high w-10 h-10 rounded-xl flex items-center justify-center text-on-surface-variant"><span class="material-symbols-outlined">${icon}</span></span>
+                                ${statusBadge}
+                            </div>
+                            <h3 class="text-xl font-bold text-on-surface mb-4">${b.slot_name}</h3>
+                            <div class="flex flex-col gap-2">
+                                <div class="flex items-center gap-3 text-on-surface-variant">
+                                    <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+                                    <span class="text-sm font-medium">${formatDate(b.date)}</span>
+                                </div>
+                                <div class="flex items-center gap-3 text-on-surface-variant">
+                                    <span class="material-symbols-outlined text-[18px]">schedule</span>
+                                    <span class="text-sm font-medium">${b.start_time} — ${b.end_time}</span>
+                                </div>
+                                ${b.categories ? `
+                                <div class="flex items-center gap-3 text-on-surface-variant mt-1 pt-3 border-t border-outline-variant/10">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-outline">Focus:</span>
+                                    <span class="text-xs font-medium truncate">${b.categories}</span>
+                                </div>` : ''}
+                            </div>
+                        </div>
+                        <div class="mt-6 flex items-center justify-end">
+                            ${canCancel ? `<button class="text-xs font-bold uppercase tracking-wider text-error border border-error/50 px-4 py-2 rounded-lg hover:bg-error/10 transition-colors active:scale-95" onclick="openCancelModal(${b.id}, '${b.start_time}', '${b.end_time}', '${b.slot_name.replace(/'/g, "\\'")}')">Cancel Booking</button>` : ''}
+                        </div>
+                    </div>`;
+                } else {
+                    // List Row layout for Past or All
+                    return `
+                    <div class="bg-surface-container-lowest rounded-xl p-5 md:py-4 transition-colors hover:bg-surface-container-[low] flex flex-col md:flex-row md:items-center justify-between gap-4 border border-outline-variant/10 hover:border-outline-variant/30">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-surface-container-low flex items-center justify-center text-on-surface-variant shrink-0">
+                                <span class="material-symbols-outlined">${icon}</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-on-surface text-base mb-0.5">${b.slot_name}</h4>
+                                <p class="text-[13px] text-on-surface-variant font-medium">${formatDate(b.date)} • ${b.start_time} - ${b.end_time}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto">
+                            <div class="flex items-center gap-2">
+                                ${statusBadge}
+                                ${attHtml}
+                            </div>
+                            ${canCancel ? `
+                            <button class="p-2 rounded-lg text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors active:scale-95 flex items-center" onclick="openCancelModal(${b.id}, '${b.start_time}', '${b.end_time}', '${b.slot_name.replace(/'/g, "\\'")}')" title="Cancel Booking">
+                                <span class="material-symbols-outlined text-[20px]">cancel</span>
+                            </button>
+                            ` : '<div class="w-9"></div>'}
+                        </div>
+                    </div>`;
+                }
+            }).join('')}
+            </div>`;
         }
 
         /* ─── Cancel modal ─────────────────────────────────────── */
         function openCancelModal(bookingId, start, end, slotName) {
             pendingCancelId = bookingId;
             document.getElementById('cancel-booking-info').innerHTML = `
-      <div style="font-size:1.05rem;font-weight:700;color:var(--text-primary)">${start} – ${end}</div>
-      <div style="font-size:0.82rem;color:var(--text-muted);margin-top:3px">${slotName} Slot</div>`;
-            document.getElementById('cancel-modal').classList.add('open');
+                <div class="font-black text-on-surface">${start} – ${end}</div>
+                <div class="text-sm font-medium text-on-surface-variant">${slotName}</div>
+            `;
+            
+            const modal = document.getElementById('cancel-modal');
+            const content = document.getElementById('cancel-modal-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // small delay for transition
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
         }
 
         function closeCancelModal() {
-            document.getElementById('cancel-modal').classList.remove('open');
-            pendingCancelId = null;
+            const modal = document.getElementById('cancel-modal');
+            const content = document.getElementById('cancel-modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                pendingCancelId = null;
+            }, 200);
         }
 
         async function doCancel() {
@@ -222,9 +322,11 @@
             const btnText = document.getElementById('cancel-btn-text');
             const spinner = document.getElementById('cancel-spinner');
             const btn = document.getElementById('confirm-cancel-btn');
-            btnText.style.display = 'none';
-            spinner.style.display = '';
+            
+            btnText.classList.add('hidden');
+            spinner.classList.remove('hidden');
             btn.disabled = true;
+            
             try {
                 await api.cancelBooking(pendingCancelId);
                 closeCancelModal();
@@ -234,11 +336,13 @@
                 closeCancelModal();
                 showAlert('error', e.message);
             }
-            btnText.style.display = '';
-            spinner.style.display = 'none';
+            
+            btnText.classList.remove('hidden');
+            spinner.classList.add('hidden');
             btn.disabled = false;
         }
 
+        // close modal on outside click
         document.getElementById('cancel-modal').addEventListener('click', e => {
             if (e.target === e.currentTarget) closeCancelModal();
         });
@@ -247,10 +351,12 @@
             try {
                 const data = await api.getBookings();
                 allBookings = data.bookings;
-                switchTab('upcoming');
+                switchTab(activeTab); // restore the tab
             } catch (e) {
-                document.getElementById('bookings-tbody').innerHTML =
-                    `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--danger)">Error: ${e.message}</td></tr>`;
+                document.getElementById('bookings-container').innerHTML = `
+                <div class="py-12 px-6 text-center bg-error-container text-error rounded-2xl font-bold border border-error/20">
+                    Failed to load bookings: ${e.message}
+                </div>`;
             }
         }
 

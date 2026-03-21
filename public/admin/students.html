@@ -6,86 +6,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="FitSlot – Student Management">
     <title>Students – FitSlot</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="/js/tailwind-config.js"></script>
     <link rel="stylesheet" href="/index.css">
 </head>
 
-<body>
-    <div class="app-layout">
-        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo">
-                <div class="logo-icon">🏋️</div>
-                <div class="logo-text">Fit<span>Slot</span></div>
-            </div>
-            <nav class="sidebar-nav">
-                <span class="nav-section-label">Admin</span>
-                <a href="/admin/dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-                <a href="/admin/slots.html" class="nav-item"><span class="nav-icon">📅</span> Slot Monitor</a>
-                <a href="/admin/attendance.html" class="nav-item"><span class="nav-icon">✅</span> Attendance</a>
-                <a href="/admin/students.html" class="nav-item active"><span class="nav-icon">👥</span> Students</a>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="sidebar-user">
-                    <div class="avatar" id="sidebar-avatar">A</div>
-                    <div class="user-info">
-                        <div class="user-name" id="sidebar-name">Admin</div>
-                        <div class="user-role" id="sidebar-role">admin</div>
-                    </div>
-                </div>
-                <button class="btn btn-ghost btn-full btn-sm" data-action="logout">⏻ Sign Out</button>
-            </div>
-        </aside>
+<body class="bg-surface text-on-surface">
 
-        <div class="main-area">
-            <header class="topbar">
-                <div style="display:flex;align-items:center;gap:1rem">
-                    <button class="hamburger" id="hamburger">☰</button>
-                    <h4 style="color:var(--text-primary);font-size:0.95rem">Students</h4>
-                </div>
-                <input type="text" class="form-input" id="search-input" placeholder="Search students…"
-                    style="width:100%;max-width:220px;font-size:0.85rem;padding:0.4rem 0.75rem" oninput="filterStudents()">
-            </header>
-
-            <main class="page-content">
-                <div class="page-header">
-                    <div class="page-header-top">
-                        <div>
-                            <h1 class="page-title">Student Management</h1>
-                            <p class="page-subtitle">View all registered students, their no-show counts, and manage
-                                blocks</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="alert alert-error" id="alert-error"></div>
-                <div class="alert alert-success" id="alert-success"></div>
-
-                <div class="card" style="padding:0">
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Roll No.</th>
-                                    <th>No-Shows</th>
-                                    <th>Status</th>
-                                    <th>Joined</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="students-tbody">
-                                <tr>
-                                    <td colspan="7" style="text-align:center;padding:3rem;color:var(--text-muted)">
-                                        <div class="spinner" style="margin:0 auto 1rem"></div>Loading…
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+    <!-- Sidebar Navigation Shell -->
+    <aside class="h-screen w-0 md:w-64 fixed left-0 top-0 border-r border-outline-variant/20 bg-surface-container-low hidden md:flex flex-col z-50 transition-all">
+        <div class="px-8 py-6 mb-4">
+            <h1 class="text-xl font-black text-on-surface tracking-tight">Admin Console</h1>
+            <p class="text-xs font-bold text-on-surface-variant tracking-wider uppercase mt-1">Management</p>
         </div>
+        <nav class="flex flex-col gap-1 px-4 h-full">
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/admin/dashboard.html">
+                <span class="material-symbols-outlined text-lg" data-icon="dashboard">dashboard</span>
+                <span class="text-sm font-bold">Overview</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/admin/slots.html">
+                <span class="material-symbols-outlined text-lg" data-icon="event_note">event_note</span>
+                <span class="text-sm font-bold">Slot Monitor</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/admin/attendance.html">
+                <span class="material-symbols-outlined text-lg" data-icon="fact_check">fact_check</span>
+                <span class="text-sm font-bold">Attendance</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-primary bg-primary/10 rounded-xl transition-all" href="/admin/students.html">
+                <span class="material-symbols-outlined text-lg" data-icon="group">group</span>
+                <span class="text-sm font-bold">Students</span>
+            </a>
+        </nav>
+        <div class="mt-auto p-4 border-t border-outline-variant/10">
+            <div class="flex items-center gap-3 px-4 py-3 mb-2 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20">
+                <div class="w-8 h-8 rounded-full kinetic-gradient flex items-center justify-center text-white font-bold" id="sidebar-avatar">A</div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-bold text-on-surface truncate" id="sidebar-name">Admin</p>
+                    <p class="text-xs text-on-surface-variant uppercase tracking-wider" id="sidebar-role">System</p>
+                </div>
+            </div>
+            <button class="w-full flex justify-center items-center py-2.5 px-4 bg-error/10 text-error rounded-xl font-bold text-sm hover:bg-error/20 transition-all cursor-pointer" data-action="logout">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Canvas -->
+    <main class="md:ml-64 min-h-screen pb-20">
+        <!-- Top Header Anchor -->
+        <header class="sticky top-0 z-40 glass-nav px-6 md:px-12 py-5 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-outline-variant/10">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-on-surface">Student Registry</h2>
+                <p class="text-on-surface-variant text-sm mt-1">Manage accounts and sanctions</p>
+            </div>
+            
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="w-full md:w-auto relative group">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input type="text" id="search-input" placeholder="Search students…" class="w-full md:w-64 pl-10 pr-4 py-2.5 bg-surface-container-low border border-outline-variant/30 rounded-full text-sm font-medium focus:ring-2 focus:ring-primary focus:bg-surface-container-lowest transition-all outline-none" oninput="filterStudents()">
+                </div>
+                <div class="hidden md:flex flex-col items-end mr-2 pl-3 border-l border-outline-variant/20 ml-1">
+                   <span class="text-sm font-bold text-on-surface">Admin User</span>
+                   <span class="text-xs text-on-surface-variant uppercase tracking-wider">System</span>
+                </div>
+                <div class="w-10 h-10 rounded-full kinetic-gradient flex items-center justify-center text-white font-bold" title="Admin Profile">A</div>
+                <button class="h-10 w-10 flex items-center justify-center rounded-full bg-error/10 text-error hover:bg-error/20 transition-colors cursor-pointer ml-1" data-action="logout" title="Sign Out">
+                    <span class="material-symbols-outlined text-[18px]">logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="px-6 md:px-12 mt-8 max-w-7xl mx-auto">
+            
+            <div id="alert-error" class="hidden px-4 py-3 rounded-lg bg-error-container text-error font-medium mb-6 flex items-center gap-2"></div>
+            <div id="alert-success" class="hidden px-4 py-3 rounded-lg bg-[#b4c5ff] text-[#00174b] font-medium mb-6 flex items-center gap-2"></div>
+
+            <div class="bg-surface-container-lowest rounded-2xl shadow-[0px_24px_48px_rgba(26,28,29,0.04)] overflow-hidden border border-outline-variant/10">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-container-low/50">
+                                <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20">Name</th>
+                                <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20 hidden md:table-cell">Email</th>
+                                <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20 hidden sm:table-cell">Roll No.</th>
+                                <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20">Status</th>
+                                <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20 hidden lg:table-cell">Joined</th>
+                                <th class="px-6 py-4 text-[10px] font-bold text-on-surface-variant uppercase tracking-widest border-b border-outline-variant/20 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-tbody" class="divide-y divide-outline-variant/10">
+                            <tr>
+                                <td colspan="6" class="px-6 py-20 text-center text-on-surface-variant font-medium">
+                                    <div class="spinner border-primary border-t-transparent mx-auto mb-4"></div>
+                                    Loading student matrix...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Mobile Nav -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 glass-nav px-6 py-3 flex items-center justify-around z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-outline-variant/20">
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/admin/dashboard.html">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="text-[10px] font-medium tracking-wide">Overview</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/admin/slots.html">
+            <span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+            <span class="text-[10px] font-medium tracking-wide">Slots</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/admin/attendance.html">
+            <span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+            <span class="text-[10px] font-medium tracking-wide">Attendance</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-primary" href="/admin/students.html">
+            <span class="material-symbols-outlined" data-icon="group">group</span>
+            <span class="text-[10px] font-bold tracking-wide">Students</span>
+        </a>
     </div>
 
     <script src="/js/api.js"></script>
@@ -93,14 +138,25 @@
     <script>
         if (!Auth.requireAdmin()) throw new Error('Not authorized');
 
+        const user = Auth.getUser();
+        document.getElementById('sidebar-name').textContent = user.name || 'Admin';
+        document.getElementById('sidebar-avatar').textContent = (user.name || 'A').charAt(0).toUpperCase();
+
+        document.querySelectorAll('[data-action="logout"]').forEach(el => {
+            el.addEventListener('click', () => Auth.logout());
+        });
+
         let allStudents = [];
 
         function showAlert(type, msg) {
-            ['error', 'success'].forEach(t => document.getElementById(`alert-${t}`).classList.remove('show'));
-            const el = document.getElementById(`alert-${type}`);
-            el.textContent = (type === 'error' ? '⚠ ' : '✓ ') + msg;
-            el.classList.add('show');
-            setTimeout(() => el.classList.remove('show'), 5000);
+            ['alert-error', 'alert-success'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden');
+            });
+            const el = document.getElementById(type === 'error' ? 'alert-error' : 'alert-success');
+            el.innerHTML = `<span class="material-symbols-outlined text-[20px]">${type === 'error' ? 'error' : 'check_circle'}</span> ${msg}`;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 5000);
         }
 
         function filterStudents() {
@@ -116,45 +172,51 @@
         function renderTable(students) {
             const tbody = document.getElementById('students-tbody');
             if (!students.length) {
-                tbody.innerHTML = `<tr><td colspan="7">
-        <div class="empty-state"><div class="empty-title">No students found</div></div>
-      </td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-16 text-center text-on-surface-variant font-medium bg-surface-container-lowest"><span class="material-symbols-outlined text-4xl mb-2 opacity-50 block">person_search</span> No students match that query.</td></tr>`;
                 return;
             }
+
             tbody.innerHTML = students.map(s => {
                 const isBlocked = s.blocked_until && new Date(s.blocked_until) > new Date();
+                
+                let nsLevel = 'bg-primary';
+                if(s.no_show_count >= 3) nsLevel = 'bg-error';
+                else if(s.no_show_count >= 2) nsLevel = 'bg-tertiary';
+                else if(s.no_show_count === 1) nsLevel = 'bg-warning';
+
                 return `
-        <tr>
-          <td class="td-primary">
-            <div style="display:flex;align-items:center;gap:0.5rem">
-              <div class="avatar" style="width:30px;height:30px;font-size:0.75rem">${s.name.charAt(0).toUpperCase()}</div>
-              ${s.name}
-            </div>
-          </td>
-          <td style="font-size:0.82rem">${s.email}</td>
-          <td>${s.roll_number || '–'}</td>
-          <td>
-            <span style="font-weight:700;color:${s.no_show_count >= 3 ? 'var(--danger)' : s.no_show_count > 0 ? 'var(--warning)' : 'var(--accent)'}">${s.no_show_count}</span>
-            <div style="margin-top:3px;width:60px">
-              <div class="progress-wrap" style="height:4px">
-                <div class="progress-bar ${s.no_show_count >= 3 ? 'danger' : s.no_show_count >= 2 ? 'warning' : ''}" style="width:${Math.min(s.no_show_count / 3 * 100, 100)}%"></div>
+        <tr class="hover:bg-surface-container-low/30 transition-colors duration-150">
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-surface-container-high flex flex-shrink-0 items-center justify-center font-bold text-on-surface text-xs uppercase">${s.name.charAt(0)}</div>
+              <div>
+                  <span class="font-bold text-on-surface leading-tight text-sm">${s.name}</span>
+                  <span class="block text-[11px] text-on-surface-variant md:hidden">${s.email}</span>
               </div>
             </div>
           </td>
-          <td>
-            ${isBlocked
-                        ? `<span class="badge badge-danger">Blocked until ${new Date(s.blocked_until).toLocaleDateString('en-IN')}</span>`
-                        : '<span class="badge badge-success">Active</span>'}
+          <td class="px-6 py-4 text-xs font-medium text-on-surface-variant hidden md:table-cell">${s.email}</td>
+          <td class="px-6 py-4 text-xs font-bold text-on-surface-variant hidden sm:table-cell">${s.roll_number || '–'}</td>
+          <td class="px-6 py-4">
+              <div class="flex flex-col gap-1.5 w-full max-w-[120px]">
+                  <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
+                      <span class="text-on-surface border border-outline-variant/30 rounded px-1.5 py-0.5">${s.no_show_count} Missed</span>
+                      ${isBlocked ? `<span class="text-error">Blocked</span>` : `<span class="text-primary">Active</span>`}
+                  </div>
+                  <div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+                      <div class="h-full rounded-full ${nsLevel}" style="width:${Math.min(s.no_show_count / 3 * 100, 100)}%"></div>
+                  </div>
+              </div>
           </td>
-          <td style="font-size:0.78rem;color:var(--text-muted)">
-            ${new Date(s.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+          <td class="px-6 py-4 text-xs text-on-surface-variant hidden lg:table-cell">
+            ${new Date(s.created_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })}
           </td>
-          <td>
+          <td class="px-6 py-4 text-right">
             ${isBlocked
-                        ? `<button class="btn btn-outline btn-sm" onclick="unblockStudent(${s.id}, '${s.name}')">Unblock</button>`
-                        : s.no_show_count > 0
-                            ? `<button class="btn btn-outline btn-sm" onclick="resetNoShows(${s.id}, '${s.name}')">Reset No-Shows</button>`
-                            : '–'}
+                ? `<button class="px-4 py-1.5 border border-error text-error rounded-md text-xs font-bold hover:bg-error/10 transition-colors active:scale-95" onclick="unblockStudent(${s.id}, '${s.name}')">Unblock</button>`
+                : s.no_show_count > 0
+                    ? `<button class="px-4 py-1.5 border border-outline-variant/50 text-on-surface-variant hover:text-on-surface hover:border-on-surface rounded-md text-xs font-bold transition-colors active:scale-95 whitespace-nowrap" onclick="resetNoShows(${s.id}, '${s.name}')">Reset Stats</button>`
+                    : '<span class="text-[10px] text-outline-variant font-bold uppercase tracking-widest px-4">—</span>'}
           </td>
         </tr>
       `;
@@ -162,7 +224,7 @@
         }
 
         async function unblockStudent(id, name) {
-            if (!confirm(`Unblock ${name}?`)) return;
+            if (!confirm(`Unblock ${name}? This regains their class booking privileges.`)) return;
             try {
                 const data = await api.unblockUser(id);
                 showAlert('success', data.message);
@@ -173,9 +235,9 @@
         async function resetNoShows(id, name) {
             if (!confirm(`Reset no-show count for ${name}?`)) return;
             try {
-                // Unblock also resets count
+                // Assuming unblock User resets count entirely
                 const data = await api.unblockUser(id);
-                showAlert('success', `No-show count reset for ${name}`);
+                showAlert('success', `No-show record cleared for ${name}`);
                 await loadStudents();
             } catch (e) { showAlert('error', e.message); }
         }
@@ -187,7 +249,7 @@
                 filterStudents();
             } catch (e) {
                 document.getElementById('students-tbody').innerHTML =
-                    `<tr><td colspan="7" style="text-align:center;color:var(--danger)">${e.message}</td></tr>`;
+                    `<tr><td colspan="6" class="px-6 py-12 text-center text-error bg-error-container font-medium">${e.message}</td></tr>`;
             }
         }
 

@@ -29,7 +29,11 @@ function verifyGoogleToken(credential) {
 
 // ─── Helper: build safe user object ──────────────────────────────────────────
 function safeUser(u) {
-    return { id: u.id, name: u.name, email: u.email, role: u.role, roll_number: u.roll_number, no_show_count: u.no_show_count };
+    return { 
+        id: u.id, name: u.name, email: u.email, role: u.role, 
+        roll_number: u.roll_number, no_show_count: u.no_show_count,
+        department: u.department, class_section: u.class_section, photo_url: u.photo_url
+    };
 }
 
 // ─── POST /api/auth/login  ────────────────────────────────────────────────────
@@ -94,12 +98,21 @@ router.post('/google', async (req, res) => {
         let user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
         if (!user) {
             const name = payload.name || email.split('@')[0];
+            const roll_number = email.split('@')[0].toUpperCase();
             const result = db.prepare(
-                'INSERT INTO users (name, email, password_hash, role, google_id) VALUES (?, ?, NULL, ?, ?)'
-            ).run(name, email, 'student', payload.sub);
+                'INSERT INTO users (name, email, password_hash, role, google_id, roll_number) VALUES (?, ?, NULL, ?, ?, ?)'
+            ).run(name, email, 'student', payload.sub, roll_number);
             user = db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid);
-        } else if (!user.google_id) {
-            db.prepare('UPDATE users SET google_id = ? WHERE id = ?').run(payload.sub, user.id);
+        } else {
+            if (!user.google_id) {
+                db.prepare('UPDATE users SET google_id = ? WHERE id = ?').run(payload.sub, user.id);
+                user.google_id = payload.sub;
+            }
+            if (!user.roll_number) {
+                const roll_number = email.split('@')[0].toUpperCase();
+                db.prepare('UPDATE users SET roll_number = ? WHERE id = ?').run(roll_number, user.id);
+                user.roll_number = roll_number;
+            }
         }
 
         // Block check
@@ -157,7 +170,7 @@ router.get('/me', (req, res) => {
     try {
         const decoded = jwt.verify(authHeader.split(' ')[1], JWT_SECRET);
         const user = db.prepare(
-            'SELECT id, name, email, role, roll_number, no_show_count, blocked_until FROM users WHERE id = ?'
+            'SELECT id, name, email, role, roll_number, department, class_section, photo_url, no_show_count, blocked_until FROM users WHERE id = ?'
         ).get(decoded.id);
         if (!user) return res.status(404).json({ error: 'User not found' });
         res.json({ user });

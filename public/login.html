@@ -1,188 +1,91 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="FitSlot – Student login to book campus gym slots">
   <title>Login – FitSlot</title>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="/js/tailwind-config.js"></script>
   <link rel="stylesheet" href="/index.css">
-  <!-- Google Identity Services -->
+
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
-    /* Google button wrapper */
-    .google-btn-wrap {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 0.5rem;
-    }
-
-    /* Google's injected button needs to be sized */
-    .google-btn-wrap>div {
-      width: 100% !important;
-    }
-
-    .or-divider {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 1.1rem 0;
-      color: var(--text-muted);
-      font-size: 0.78rem;
-    }
-
-    .or-divider::before,
-    .or-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    /* Fallback manual Google button (shown if GIS library fails to render) */
-    .google-fallback-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.65rem;
-      width: 100%;
-      padding: 0.7rem 1rem;
-      border-radius: var(--radius-md);
-      border: 1.5px solid rgba(255, 255, 255, 0.12);
-      background: #fff;
-      color: #3c4043;
-      font-size: 0.88rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: box-shadow 0.2s;
-      font-family: inherit;
-    }
-
-    .google-fallback-btn:hover {
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
-    }
+    /* Google Identity buttons need to keep their structure */
+    .google-btn-wrap { display: flex; justify-content: center; margin-bottom: 0.5rem; }
+    .google-btn-wrap > div { width: 100% !important; }
   </style>
 </head>
 
-<body>
-  <div class="auth-page">
-    <div class="auth-box fade-in">
-      <!-- Logo -->
-      <div class="auth-logo">
-        <div class="logo-icon">🏋️</div>
-        <div class="logo-text">Fit<span>Slot</span></div>
+<body class="text-on-surface antialiased bg-surface min-h-screen flex text-center items-center justify-center p-6 bg-[radial-gradient(ellipse_at_20%_50%,rgba(0,74,198,0.04)_0%,transparent_60%),radial-gradient(ellipse_at_80%_20%,rgba(37,99,235,0.04)_0%,transparent_60%)]">
+  <div class="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-[0px_24px_48px_rgba(26,28,29,0.06)] p-8 md:p-12 relative overflow-hidden text-center mx-auto transition-all">
+    
+    <!-- Decorative Glow -->
+    <div class="absolute -right-12 -top-12 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl"></div>
+
+    <!-- Logo -->
+    <div class="flex flex-col items-center gap-2 mb-10 relative z-10">
+      <div class="w-14 h-14 rounded-xl kinetic-gradient text-white flex items-center justify-center text-3xl shadow-lg">
+        <span class="material-symbols-outlined">fitness_center</span>
       </div>
+      <div class="text-2xl font-black tracking-tight text-on-surface">Fit<span class="text-primary">Slot</span></div>
+    </div>
 
-      <!-- Tabs -->
-      <div class="tabs" style="margin-bottom:1.5rem;">
-        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Login</button>
-        <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Register</button>
-      </div>
+    <!-- Removed Tabs -->
 
-      <!-- Alerts -->
-      <div class="alert alert-error" id="alert-error" role="alert"></div>
-      <div class="alert alert-success" id="alert-success" role="alert"></div>
+    <!-- Alerts -->
+    <div id="alert-error" class="hidden mb-6 p-4 rounded-md bg-error-container text-error text-sm font-medium text-left"></div>
+    <div id="alert-success" class="hidden mb-6 p-4 rounded-md bg-primary-fixed text-on-primary-fixed text-sm font-medium text-left"></div>
 
-      <!-- ─── Login Form ─── -->
-      <form id="login-form" autocomplete="on">
-        <h2 class="auth-title">Welcome back</h2>
-        <p class="auth-subtitle" style="margin-bottom:1.25rem">Sign in to book your gym slot</p>
+    <!-- ─── Login Form ─── -->
+    <form id="login-form" autocomplete="on" class="relative z-10 w-full text-left">
+      <h2 class="text-2xl font-extrabold tracking-tight text-on-surface text-left">Welcome back</h2>
+      <p class="text-on-surface-variant text-sm mb-8 text-left">Sign in to book your kinetic sanctuary session.</p>
 
-        <!-- Google Sign-In button (GIS renders here) -->
-        <div class="google-btn-wrap" id="g-signin-login"></div>
+      <div class="google-btn-wrap" id="g-signin-login"></div>
 
-        <!-- Fallback manual button (hidden until GIS btn confirmed rendered) -->
-        <button type="button" class="google-fallback-btn" id="google-fallback-login" style="display:none"
-          onclick="startGoogleSignIn()">
-          <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-              fill="#4285F4" />
-            <path
-              d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
-              fill="#34A853" />
-            <path
-              d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
-              fill="#FBBC05" />
-            <path
-              d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
-              fill="#EA4335" />
+      <button type="button" class="hidden w-full flex items-center justify-center gap-2 py-3 px-4 bg-surface-container-lowest border border-outline-variant/30 rounded-full text-sm font-bold text-on-surface hover:shadow-md transition-all" id="google-fallback-login" onclick="startGoogleSignIn()">
+         <!-- SVG icon from old file -->
+         <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4" />
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853" />
+            <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05" />
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" />
           </svg>
           Sign in with Google
-        </button>
+      </button>
 
-        <div class="or-divider">or sign in with email</div>
+      <div class="flex items-center gap-3 my-6 text-xs text-on-surface-variant uppercase tracking-wider font-bold">
+        <div class="flex-1 h-px bg-outline-variant/20"></div>
+        or sign in with email
+        <div class="flex-1 h-px bg-outline-variant/20"></div>
+      </div>
 
-        <div class="form-group">
-          <label class="form-label" for="login-email">College Email</label>
-          <input class="form-input" type="email" id="login-email" placeholder="yourname@bvrit.ac.in"
-            autocomplete="email" required>
+      <div class="flex flex-col gap-5 text-left mb-8">
+        <div class="w-full">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2" for="login-email">College Email</label>
+          <input class="w-full bg-surface-container-low border-transparent focus:bg-surface-container-lowest focus:border-outline-variant/40 focus:ring-0 rounded-md py-3 px-4 text-sm transition-all" type="email" id="login-email" placeholder="yourname@bvrit.ac.in" autocomplete="email" required>
         </div>
-        <div class="form-group">
-          <label class="form-label" for="login-password">Password</label>
-          <input class="form-input" type="password" id="login-password" placeholder="••••••••"
-            autocomplete="current-password" required>
+        <div class="w-full">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2" for="login-password">Password</label>
+          <input class="w-full bg-surface-container-low border-transparent focus:bg-surface-container-lowest focus:border-outline-variant/40 focus:ring-0 rounded-md py-3 px-4 text-sm transition-all" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
         </div>
+      </div>
 
-        <button class="btn btn-primary btn-full btn-lg" type="submit" id="login-btn" style="margin-top:0.25rem">
-          <span id="login-btn-text">Sign In</span>
-          <div class="spinner" id="login-spinner" style="display:none;width:18px;height:18px;"></div>
-        </button>
+      <button class="w-full flex items-center justify-center h-12 rounded-full bg-surface-container-high border border-outline-variant/30 text-on-surface hover:bg-surface-container-highest transition-all text-sm font-bold shadow-sm active:scale-95" type="submit" id="login-btn">
+        <span id="login-btn-text">Sign In with Email</span>
+        <div class="spinner !hidden" id="login-spinner"></div>
+      </button>
 
-        <p style="text-align:center;margin-top:1rem;font-size:0.82rem;color:var(--text-muted)">
-          Admin? <a href="/admin/login.html">Admin Login →</a>
-        </p>
-      </form>
+      <p class="mt-6 text-sm text-center text-on-surface-variant">
+        Admin? <a href="/admin/login.html" class="text-primary font-bold hover:underline">Admin Login →</a>
+      </p>
+    </form>
 
-      <!-- ─── Register Form ─── -->
-      <form id="register-form" style="display:none" autocomplete="on">
-        <h2 class="auth-title">Create account</h2>
-        <p class="auth-subtitle" style="margin-bottom:1rem">Use your @bvrit.ac.in email</p>
-
-        <div class="google-btn-wrap" id="g-signin-register"></div>
-        <button type="button" class="google-fallback-btn" id="google-fallback-register" style="display:none"
-          onclick="startGoogleSignIn()">
-          <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"
-              fill="#4285F4" />
-            <path
-              d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"
-              fill="#34A853" />
-            <path
-              d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"
-              fill="#FBBC05" />
-            <path
-              d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"
-              fill="#EA4335" />
-          </svg>
-          Continue with Google
-        </button>
-        <div class="or-divider">or register with email</div>
-
-        <div class="form-group">
-          <label class="form-label" for="reg-name">Full Name</label>
-          <input class="form-input" type="text" id="reg-name" placeholder="e.g. Anudeep Reddy" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="reg-email">College Email</label>
-          <input class="form-input" type="email" id="reg-email" placeholder="yourname@bvrit.ac.in" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="reg-roll">Roll Number</label>
-          <input class="form-input" type="text" id="reg-roll" placeholder="e.g. 22B21A0001">
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="reg-password">Password</label>
-          <input class="form-input" type="password" id="reg-password" placeholder="Min. 6 characters" required>
-        </div>
-
-        <button class="btn btn-primary btn-full btn-lg" type="submit" id="reg-btn" style="margin-top:0.25rem">
-          <span id="reg-btn-text">Create Account</span>
-          <div class="spinner" id="reg-spinner" style="display:none;width:18px;height:18px;"></div>
-        </button>
-      </form>
-    </div>
+    <!-- Removed Register Form -->
   </div>
 
   <script src="/js/api.js"></script>
@@ -190,34 +93,28 @@
   <script>
     const GOOGLE_CLIENT_ID = '254105171372-aib0pt80had9mvnll3bbj5n3grn2phgo.apps.googleusercontent.com';
 
-    // Redirect if already logged in
     if (Auth.isLoggedIn() && Auth.getRole() === 'student') {
       window.location.href = '/dashboard.html';
     }
 
-    function switchTab(tab) {
-      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
-      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
-      document.getElementById('login-form').style.display = tab === 'login' ? '' : 'none';
-      document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
-      hideAlerts();
-    }
+    // Tabs removed, so switchTab is no longer needed
 
     function showAlert(type, msg) {
       hideAlerts();
       const el = document.getElementById(`alert-${type}`);
       el.textContent = (type === 'error' ? '⚠ ' : '✓ ') + msg;
-      el.classList.add('show');
+      el.classList.remove('hidden');
     }
 
     function hideAlerts() {
-      document.querySelectorAll('.alert').forEach(e => e.classList.remove('show'));
+      document.getElementById('alert-error').classList.add('hidden');
+      document.getElementById('alert-success').classList.add('hidden');
     }
 
     function setLoading(formId, loading) {
       const prefix = formId === 'login-form' ? 'login' : 'reg';
-      document.getElementById(`${prefix}-btn-text`).style.display = loading ? 'none' : '';
-      document.getElementById(`${prefix}-spinner`).style.display = loading ? '' : 'none';
+      document.getElementById(`${prefix}-btn-text`).classList.toggle('hidden', loading);
+      document.getElementById(`${prefix}-spinner`).classList.toggle('!hidden', !loading);
       document.getElementById(`${prefix}-btn`).disabled = loading;
     }
 
@@ -225,7 +122,6 @@
     async function handleGoogleCredential(response) {
       hideAlerts();
       try {
-        // Send the ID token credential to our backend
         const res = await fetch('/api/auth/google', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -247,9 +143,7 @@
     /* ─── Init Google Sign-In buttons after GIS loads ─────────── */
     window.addEventListener('load', () => {
       if (!window.google?.accounts?.id) {
-        // GIS library didn't load — show fallback buttons
-        document.getElementById('google-fallback-login').style.display = '';
-        document.getElementById('google-fallback-register').style.display = '';
+        document.getElementById('google-fallback-login').classList.remove('hidden');
         return;
       }
 
@@ -259,18 +153,15 @@
         auto_select: false,
       });
 
-      // Render Sign In With Google button in both tab panels
       const btnConfig = { theme: 'outline', size: 'large', width: 340, text: 'signin_with', shape: 'rectangular' };
       google.accounts.id.renderButton(document.getElementById('g-signin-login'), { ...btnConfig });
-      google.accounts.id.renderButton(document.getElementById('g-signin-register'), { ...btnConfig, text: 'continue_with' });
     });
 
-    // Fallback: redirect to Google OAuth manually if GIS failed to load
     function startGoogleSignIn() {
       showAlert('error', 'Google Sign-In could not load. Check your internet connection and try again.');
     }
 
-    /* ─── Email/Password Login ──────────────────────────────────── */
+    /* ─── Forms ──────────────────────────────────── */
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       hideAlerts();
@@ -292,25 +183,7 @@
       }
     });
 
-    /* ─── Email/Password Register ───────────────────────────────── */
-    document.getElementById('register-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      hideAlerts();
-      const name = document.getElementById('reg-name').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const roll_number = document.getElementById('reg-roll').value.trim();
-      const password = document.getElementById('reg-password').value;
-      setLoading('register-form', true);
-      try {
-        const data = await api.register({ name, email, password, roll_number });
-        Auth.setSession(data.token, data.user);
-        window.location.href = '/dashboard.html';
-      } catch (err) {
-        showAlert('error', err.message);
-        setLoading('register-form', false);
-      }
-    });
+    // Register form logic removed
   </script>
 </body>
-
 </html>

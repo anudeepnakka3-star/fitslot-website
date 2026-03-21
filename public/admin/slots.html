@@ -6,65 +6,118 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="FitSlot – Slot Monitoring">
     <title>Slot Monitor – FitSlot</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="/js/tailwind-config.js"></script>
     <link rel="stylesheet" href="/index.css">
 </head>
 
-<body>
-    <div class="app-layout">
-        <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo">
-                <div class="logo-icon">🏋️</div>
-                <div class="logo-text">Fit<span>Slot</span></div>
-            </div>
-            <nav class="sidebar-nav">
-                <span class="nav-section-label">Admin</span>
-                <a href="/admin/dashboard.html" class="nav-item"><span class="nav-icon">📊</span> Dashboard</a>
-                <a href="/admin/slots.html" class="nav-item active"><span class="nav-icon">📅</span> Slot Monitor</a>
-                <a href="/admin/attendance.html" class="nav-item"><span class="nav-icon">✅</span> Attendance</a>
-                <a href="/admin/students.html" class="nav-item"><span class="nav-icon">👥</span> Students</a>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="sidebar-user">
-                    <div class="avatar" id="sidebar-avatar">A</div>
-                    <div class="user-info">
-                        <div class="user-name" id="sidebar-name">Admin</div>
-                        <div class="user-role" id="sidebar-role">admin</div>
-                    </div>
-                </div>
-                <button class="btn btn-ghost btn-full btn-sm" data-action="logout">⏻ Sign Out</button>
-            </div>
-        </aside>
+<body class="bg-surface text-on-surface">
 
-        <div class="main-area">
-            <header class="topbar">
-                <div style="display:flex;align-items:center;gap:1rem">
-                    <button class="hamburger" id="hamburger">☰</button>
-                    <div>
-                        <h4 style="color:var(--text-primary);font-size:0.95rem">Slot Monitor</h4>
-                        <p style="font-size:0.75rem;color:var(--text-muted)" id="today-label">—</p>
-                    </div>
-                </div>
-                <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
-                    <input type="date" class="form-input" id="date-picker"
-                        style="width:100%;max-width:160px;font-size:0.82rem;padding:0.4rem 0.75rem">
-                    <button class="btn btn-outline btn-sm" onclick="loadSlots()">🔄 Refresh</button>
-                </div>
-            </header>
-
-            <main class="page-content">
-                <div class="page-header">
-                    <h1 class="page-title">Slot Monitor</h1>
-                    <p class="page-subtitle">Live occupancy and student lists for each slot</p>
-                </div>
-
-                <div id="slots-container" class="slots-grid">
-                    <div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-muted)">
-                        <div class="spinner" style="margin:0 auto 1rem"></div>Loading…
-                    </div>
-                </div>
-            </main>
+    <!-- Sidebar Navigation Shell -->
+    <aside class="h-screen w-0 md:w-64 fixed left-0 top-0 border-r border-outline-variant/20 bg-surface-container-low hidden md:flex flex-col z-50 transition-all">
+        <div class="px-8 py-6 mb-4">
+            <h1 class="text-xl font-black text-on-surface tracking-tight">Admin Console</h1>
+            <p class="text-xs font-bold text-on-surface-variant tracking-wider uppercase mt-1">Management</p>
         </div>
+        <nav class="flex flex-col gap-1 px-4 h-full">
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/admin/dashboard.html">
+                <span class="material-symbols-outlined text-lg" data-icon="dashboard">dashboard</span>
+                <span class="text-sm font-bold">Overview</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-primary bg-primary/10 rounded-xl transition-all" href="/admin/slots.html">
+                <span class="material-symbols-outlined text-lg" data-icon="event_note">event_note</span>
+                <span class="text-sm font-bold">Slot Monitor</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/admin/attendance.html">
+                <span class="material-symbols-outlined text-lg" data-icon="fact_check">fact_check</span>
+                <span class="text-sm font-bold">Attendance</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/admin/students.html">
+                <span class="material-symbols-outlined text-lg" data-icon="group">group</span>
+                <span class="text-sm font-bold">Students</span>
+            </a>
+        </nav>
+        <div class="mt-auto p-4 border-t border-outline-variant/10">
+            <div class="flex items-center gap-3 px-4 py-3 mb-2 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20">
+                <div class="w-8 h-8 rounded-full kinetic-gradient flex items-center justify-center text-white font-bold" id="sidebar-avatar">A</div>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-bold text-on-surface truncate" id="sidebar-name">Admin</p>
+                    <p class="text-xs text-on-surface-variant uppercase tracking-wider" id="sidebar-role">System</p>
+                </div>
+            </div>
+            <button class="w-full flex justify-center items-center py-2.5 px-4 bg-error/10 text-error rounded-xl font-bold text-sm hover:bg-error/20 transition-all cursor-pointer" data-action="logout">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Canvas -->
+    <main class="md:ml-64 min-h-screen pb-20">
+        <!-- Top Header Anchor -->
+        <header class="sticky top-0 z-40 glass-nav px-6 md:px-12 py-5 flex flex-col md:flex-row md:justify-between md:items-center gap-4 shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-outline-variant/10">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-on-surface">Slot Monitor</h2>
+                <p class="text-on-surface-variant text-sm mt-1" id="today-label">Loading Date...</p>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <div class="bg-surface-container-low px-1 py-1 rounded-lg border border-outline-variant/20 flex items-center">
+                    <input type="date" class="bg-transparent border-none text-sm text-on-surface focus:ring-0 cursor-pointer h-9 px-3" id="date-picker">
+                    <div class="w-px h-5 bg-outline-variant/30 mx-1"></div>
+                    <button class="h-9 px-4 rounded-md bg-surface-container-lowest border border-outline-variant/20 text-on-surface-variant font-bold text-xs uppercase tracking-wider hover:bg-surface-container-high transition-colors shadow-sm" onclick="loadSlots()">
+                        <span class="material-symbols-outlined text-[14px] align-middle mr-1">refresh</span> Refresh
+                    </button>
+                </div>
+                <div class="hidden md:flex flex-col items-end mr-2 pl-3 border-l border-outline-variant/20 ml-1">
+                   <span class="text-sm font-bold text-on-surface">Admin User</span>
+                   <span class="text-xs text-on-surface-variant uppercase tracking-wider">System</span>
+                </div>
+                <div class="w-10 h-10 rounded-full kinetic-gradient flex items-center justify-center text-white font-bold" title="Admin Profile">A</div>
+                <button class="h-10 w-10 flex items-center justify-center rounded-full bg-error/10 text-error hover:bg-error/20 transition-colors cursor-pointer ml-1" data-action="logout" title="Sign Out">
+                    <span class="material-symbols-outlined text-[18px]">logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="px-6 md:px-12 mt-8 max-w-7xl mx-auto">
+            
+            <div class="mb-8">
+                <p class="text-on-surface-variant max-w-2xl">Live occupancy and student lists for each slot schedule.</p>
+            </div>
+
+            <div id="slots-container" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Loading State -->
+                <div class="col-span-full text-center py-20 text-on-surface-variant">
+                    <div class="spinner border-primary border-t-transparent mx-auto mb-4"></div>
+                    Loading slots...
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Mobile Nav -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 glass-nav px-6 py-3 flex items-center justify-around z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-outline-variant/20">
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/admin/dashboard.html">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="text-[10px] font-medium tracking-wide">Overview</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-primary" href="/admin/slots.html">
+            <span class="material-symbols-outlined" data-icon="event_note">event_note</span>
+            <span class="text-[10px] font-bold tracking-wide">Slots</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/admin/attendance.html">
+            <span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+            <span class="text-[10px] font-medium tracking-wide">Attendance</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/admin/students.html">
+            <span class="material-symbols-outlined" data-icon="group">group</span>
+            <span class="text-[10px] font-medium tracking-wide">Students</span>
+        </a>
     </div>
 
     <script src="/js/api.js"></script>
@@ -72,26 +125,34 @@
     <script>
         if (!Auth.requireAdmin()) throw new Error('Not authorized');
 
+        const user = Auth.getUser();
+        document.getElementById('sidebar-name').textContent = user.name || 'Admin';
+        document.getElementById('sidebar-avatar').textContent = (user.name || 'A').charAt(0).toUpperCase();
+
         const today = new Date().toLocaleDateString('en-CA');
         document.getElementById('date-picker').value = today;
         document.getElementById('today-label').textContent =
             new Date().toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric' });
 
         document.getElementById('date-picker').addEventListener('change', loadSlots);
+        
+        document.querySelectorAll('[data-action="logout"]').forEach(el => {
+            el.addEventListener('click', () => Auth.logout());
+        });
 
         async function loadSlots() {
             const date = document.getElementById('date-picker').value || today;
             const container = document.getElementById('slots-container');
+            
             try {
+                container.innerHTML = '<div class="col-span-full text-center py-20 text-on-surface-variant"><div class="spinner border-primary border-t-transparent mx-auto mb-4"></div>Loading student lists...</div>';
+                
                 const slotsData = await api.getSlots(date);
 
                 if (!slotsData.slots.length) {
-                    container.innerHTML = '<div class="empty-state"><div class="empty-title">No slots found</div></div>';
+                    container.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center p-12 bg-surface-container-lowest rounded-2xl border border-dashed border-outline-variant/30 text-on-surface-variant"><span class="material-symbols-outlined text-4xl mb-3 opacity-50">event_busy</span><p class="font-bold">No slots found</p><p class="text-sm">No classes scheduled for this date.</p></div>';
                     return;
                 }
-
-                // For each slot, load student list
-                container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--text-muted)"><div class="spinner" style="margin:0 auto 1rem"></div>Loading student lists…</div>';
 
                 const studentsLists = await Promise.all(
                     slotsData.slots.map(s => api.getStudents(s.id, date).catch(() => ({ students: [] })))
@@ -103,72 +164,95 @@
                     const confirmed = students.filter(s => s.status === 'confirmed');
                     const waitlisted = students.filter(s => s.status === 'waitlist');
 
+                    let badgeColor = 'bg-primary/10 text-primary';
+                    let barColor = 'from-[#004ac6] to-[#2563eb]';
+                    if (pct >= 100) { badgeColor = 'bg-error-container text-error'; barColor = 'from-error to-error-container'; }
+                    else if (pct >= 80) { badgeColor = 'bg-tertiary/20 text-tertiary'; barColor = 'from-tertiary to-tertiary-container'; }
+
+                    const confirmedHTML = confirmed.length > 0 ? `
+                        <div class="mb-4">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant mb-2">Confirmed (${confirmed.length})</p>
+                            <div class="flex flex-col gap-1">
+                                ${confirmed.map(s => {
+                                    let attBadge = '<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-surface-variant text-on-surface-variant">Pending</span>';
+                                    if(s.attendance_status === 'present') attBadge = '<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-primary/10 text-primary">Present</span>';
+                                    if(s.attendance_status === 'absent') attBadge = '<span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-error-container text-error">Absent</span>';
+                                    
+                                    return `
+                                        <div class="flex items-center gap-3 py-1 border-b border-outline-variant/10 last:border-0">
+                                            <div class="w-6 h-6 rounded-md bg-surface-container-high flex items-center justify-center text-[10px] font-bold text-on-surface">${s.name.charAt(0).toUpperCase()}</div>
+                                            <div class="flex-1 overflow-hidden">
+                                                <p class="text-xs font-bold text-on-surface truncate">${s.name}</p>
+                                                <p class="text-[10px] text-on-surface-variant truncate">${s.roll_number || s.email}</p>
+                                            </div>
+                                            <div>${attBadge}</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    ` : '';
+
+                    const waitlistHTML = waitlisted.length > 0 ? `
+                        <div class="mb-2">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-secondary mb-2">Waitlist (${waitlisted.length})</p>
+                            <div class="flex flex-col gap-1">
+                                ${waitlisted.map(s => `
+                                    <div class="flex items-center gap-2 py-1">
+                                        <span class="text-[10px] font-black text-secondary w-4">#${s.waitlist_position}</span>
+                                        <p class="text-xs font-medium text-on-surface-variant truncate">${s.name}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : '';
+
+                    const emptyHTML = students.length === 0 ? `
+                        <div class="py-6 text-center text-sm font-medium text-on-surface-variant bg-surface-container-low/30 rounded-lg border border-dashed border-outline-variant/30">
+                            No bookings yet
+                        </div>
+                    ` : '';
+
                     return `
-          <div class="slot-card">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem">
-              <div>
-                <div class="slot-time">${slot.start_time} – ${slot.end_time}</div>
-                <div class="slot-name">${slot.name} Slot</div>
-              </div>
-              <span class="badge ${pct >= 100 ? 'badge-danger' : pct >= 80 ? 'badge-warning' : 'badge-success'}">${slot.confirmed_count}/${slot.capacity}</span>
-            </div>
+                        <div class="bg-surface-container-lowest rounded-2xl shadow-[0px_12px_24px_rgba(26,28,29,0.03)] p-6 border border-transparent hover:border-outline-variant/20 transition-all flex flex-col h-full">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="text-xl font-black tracking-tight text-on-surface leading-none">${slot.start_time}</h4>
+                                    <p class="text-xs font-medium text-on-surface-variant mt-1.5">Ends at ${slot.end_time}</p>
+                                    <div class="mt-2 inline-flex items-center gap-1.5 px-2 py-1 bg-surface-container-high rounded-md">
+                                        <span class="w-2 h-2 rounded-full ${slotsData.slots[i].window_status === 'ended' ? 'bg-outline' : 'bg-primary'}"></span>
+                                        <span class="text-[10px] font-bold text-on-surface uppercase tracking-wider flex items-center">${slot.name} ${slot.is_demo ? '<span class="text-[9px] text-[#F57F17] bg-[#FFF9C4]/80 border border-[#F57F17]/30 px-1.5 py-0.5 rounded ml-1">[DEMO]</span>' : ''}</span>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-1 rounded-md text-xs font-bold uppercase ${badgeColor}">${slot.confirmed_count}/${slot.capacity}</span>
+                            </div>
 
-            <div class="slot-availability" style="margin-bottom:1rem">
-              <div class="progress-wrap">
-                <div class="progress-bar ${pct >= 100 ? 'danger' : pct >= 80 ? 'warning' : ''}" style="width:${Math.min(pct, 100)}%"></div>
-              </div>
-              <div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-top:0.25rem">
-                <span style="color:var(--text-muted)">${slot.available} seats available</span>
-                ${slot.waitlist_count > 0 ? `<span style="color:var(--info)">${slot.waitlist_count} waiting</span>` : ''}
-              </div>
-            </div>
+                            <div class="mb-5">
+                                <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden mb-1.5">
+                                    <div class="h-full rounded-full bg-gradient-to-r ${barColor}" style="width:${Math.min(pct, 100)}%"></div>
+                                </div>
+                                <div class="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                                    <span class="text-on-surface-variant">${slot.available} seats left</span>
+                                    ${slot.waitlist_count > 0 ? `<span class="text-secondary">${slot.waitlist_count} waiting</span>` : ''}
+                                </div>
+                            </div>
 
-            ${confirmed.length > 0 ? `
-              <div style="margin-bottom:0.75rem">
-                <div style="font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.5rem">Confirmed (${confirmed.length})</div>
-                ${confirmed.map(s => `
-                  <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid rgba(42,58,82,0.3)">
-                    <div class="avatar" style="width:28px;height:28px;font-size:0.72rem">${s.name.charAt(0).toUpperCase()}</div>
-                    <div style="flex:1;min-width:0">
-                      <div style="font-size:0.82rem;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name}</div>
-                      <div style="font-size:0.7rem;color:var(--text-muted)">${s.roll_number || s.email}</div>
-                    </div>
-                    <span class="badge ${s.attendance_status === 'present' ? 'badge-success' : s.attendance_status === 'absent' ? 'badge-danger' : 'badge-muted'}" style="font-size:0.65rem">
-                      ${s.attendance_status || 'pending'}
-                    </span>
-                  </div>
-                `).join('')}
-              </div>
-            ` : ''}
+                            <div class="flex-1">
+                                ${confirmedHTML}
+                                ${waitlistHTML}
+                                ${emptyHTML}
+                            </div>
 
-            ${waitlisted.length > 0 ? `
-              <div>
-                <div style="font-size:0.72rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--info);margin-bottom:0.5rem">Waitlist (${waitlisted.length})</div>
-                ${waitlisted.map(s => `
-                  <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0">
-                    <span style="color:var(--info);font-size:0.75rem;font-weight:600">#${s.waitlist_position}</span>
-                    <div style="flex:1;font-size:0.82rem;color:var(--text-secondary)">${s.name}</div>
-                  </div>
-                `).join('')}
-              </div>
-            ` : ''}
-
-            ${students.length === 0 ? `
-              <div class="empty-state" style="padding:1rem">
-                <div class="empty-desc" style="font-size:0.8rem">No bookings yet</div>
-              </div>
-            ` : ''}
-
-            <div style="margin-top:0.75rem">
-              <a href="/admin/attendance.html?slot=${slot.id}&date=${date}" class="btn btn-outline btn-sm btn-full">
-                ✅ Mark Attendance
-              </a>
-            </div>
-          </div>
-        `;
+                            <div class="mt-6 pt-4 border-t border-outline-variant/10">
+                                <a href="/admin/attendance.html?slot=${slot.id}&date=${date}" class="w-full inline-flex justify-center items-center py-2.5 px-4 bg-primary text-on-primary rounded-xl font-bold text-sm shadow-md hover:opacity-90 transition-all cursor-pointer">
+                                    <span class="material-symbols-outlined text-[18px] mr-2">fact_check</span> Mark Attendance
+                                </a>
+                            </div>
+                        </div>
+                    `;
                 }).join('');
             } catch (e) {
-                container.innerHTML = `<div class="empty-state"><div class="empty-title">Error</div><div class="empty-desc">${e.message}</div></div>`;
+                container.innerHTML = `<div class="col-span-full p-6 bg-error-container text-error rounded-xl font-bold">${e.message}</div>`;
             }
         }
 

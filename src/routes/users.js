@@ -6,7 +6,7 @@ const { requireAdmin } = require('../middleware/auth');
 // GET /api/users — admin: list all students
 router.get('/', requireAdmin, (req, res) => {
     const users = db.prepare(
-        "SELECT id, name, email, roll_number, no_show_count, blocked_until, created_at FROM users WHERE role = 'student' ORDER BY name ASC"
+        "SELECT id, name, email, roll_number, department, class_section, photo_url, no_show_count, blocked_until, created_at FROM users WHERE role = 'student' ORDER BY name ASC"
     ).all();
     res.json({ users });
 });
@@ -20,6 +20,34 @@ router.patch('/:id/unblock', requireAdmin, (req, res) => {
         user.id, '✅ Your account has been unblocked by the admin.', 'success'
     );
     res.json({ message: `${user.name} unblocked successfully` });
+});
+
+// PUT /api/users/profile — student: update own profile
+const { requireAuth } = require('../middleware/auth');
+
+router.put('/profile', requireAuth, (req, res) => {
+    const { name, department, class_section, photo_url } = req.body;
+
+    if (!name || name.trim() === '') {
+        return res.status(400).json({ error: 'Name cannot be empty' });
+    }
+    if (!department || department.trim() === '') {
+        return res.status(400).json({ error: 'Department cannot be empty' });
+    }
+    if (!class_section || class_section.trim() === '') {
+        return res.status(400).json({ error: 'Class section is required' });
+    }
+
+    try {
+        db.prepare(
+            'UPDATE users SET name = ?, department = ?, class_section = ?, photo_url = ? WHERE id = ?'
+        ).run(name.trim(), department.trim(), class_section.trim(), photo_url, req.user.id);
+        
+        res.json({ message: 'Profile updated successfully' });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ error: 'Failed to update profile' });
+    }
 });
 
 module.exports = router;

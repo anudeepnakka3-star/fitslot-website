@@ -31,6 +31,10 @@ db.pragma('foreign_keys = ON');
 
 // Migrate: add google_id column to users if missing
 try { db.exec('ALTER TABLE users ADD COLUMN google_id TEXT'); } catch { }
+// Migrate: add new profile columns to users
+try { db.exec('ALTER TABLE users ADD COLUMN department TEXT'); } catch { }
+try { db.exec('ALTER TABLE users ADD COLUMN class_section TEXT'); } catch { }
+try { db.exec('ALTER TABLE users ADD COLUMN photo_url TEXT'); } catch { }
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -52,7 +56,8 @@ db.exec(`
     start_time  TEXT NOT NULL,  -- "HH:MM" 24h
     end_time    TEXT NOT NULL,  -- "HH:MM" 24h
     capacity    INTEGER NOT NULL DEFAULT 15,
-    is_active   INTEGER NOT NULL DEFAULT 1
+    is_active   INTEGER NOT NULL DEFAULT 1,
+    is_demo     INTEGER NOT NULL DEFAULT 0
   );
 
   CREATE TABLE IF NOT EXISTS bookings (
@@ -101,6 +106,23 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_bookings_slot_date ON bookings(slot_id, date);
   CREATE INDEX IF NOT EXISTS idx_attendance_booking ON attendance(booking_id);
   CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
+
 `);
+
+// Migrate: add is_demo to slots table
+try { db.exec('ALTER TABLE slots ADD COLUMN is_demo INTEGER NOT NULL DEFAULT 0'); } catch { }
+
+// Seed: Insert the demo slot if it doesn't already exist
+try {
+    const demoExists = db.prepare('SELECT id FROM slots WHERE is_demo = 1').get();
+    if (!demoExists) {
+        db.prepare(`
+            INSERT INTO slots (name, start_time, end_time, capacity, is_active, is_demo)
+            VALUES ('Demo Slot', '15:00', '16:00', 15, 1, 1)
+        `).run();
+    }
+} catch (e) {
+    console.error('Error inserting Demo Slot:', e);
+}
 
 module.exports = db;

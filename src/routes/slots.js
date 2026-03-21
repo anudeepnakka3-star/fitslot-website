@@ -41,8 +41,8 @@ router.get('/', requireAuth, (req, res) => {
         const windowOpen = new Date(slotStart.getTime() - 30 * 60 * 1000);
 
         let windowStatus = 'open';
-        if (now < windowOpen) windowStatus = 'not_yet';
-        if (now >= slotEnd) windowStatus = 'ended';
+        if (!slot.is_demo && now < windowOpen) windowStatus = 'not_yet';
+        if (!slot.is_demo && now >= slotEnd) windowStatus = 'ended';
 
         // User's booking for this slot
         let userBooking = null;

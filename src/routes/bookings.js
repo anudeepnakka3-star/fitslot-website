@@ -55,13 +55,13 @@ router.post('/', requireAuth, (req, res) => {
     const slotEnd = timeToDate(slot.end_time, date);
     const windowOpen = new Date(slotStart.getTime() - 30 * 60 * 1000);
 
-    if (now < windowOpen) {
+    if (!slot.is_demo && now < windowOpen) {
         return res.status(400).json({
             error: `Booking window not yet open. Opens at ${windowOpen.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`,
             window_opens_at: windowOpen.toISOString()
         });
     }
-    if (now >= slotEnd) {
+    if (!slot.is_demo && now >= slotEnd) {
         return res.status(400).json({ error: 'This slot has already ended' });
     }
 
@@ -153,7 +153,7 @@ router.delete('/:id', requireAuth, (req, res) => {
     const slotStart = timeToDate(slot.start_time, booking.date);
     const cancelDeadline = new Date(slotStart.getTime() - 10 * 60 * 1000);
 
-    if (now >= cancelDeadline && req.user.role !== 'admin') {
+    if (!slot.is_demo && now >= cancelDeadline && req.user.role !== 'admin') {
         return res.status(400).json({ error: 'Cancellation window has closed (10 minutes before slot start)' });
     }
 

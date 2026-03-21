@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>My Bookings | FitSlot</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary-container": "#eeefff",
+              "on-error": "#ffffff",
+              "on-error-container": "#93000a",
+              "background": "#f9f9fa",
+              "tertiary": "#943700",
+              "primary-fixed-dim": "#b4c5ff",
+              "surface": "#f9f9fa",
+              "surface-container": "#eeeeef",
+              "secondary-container": "#dce2f3",
+              "on-tertiary": "#ffffff",
+              "primary-fixed": "#dbe1ff",
+              "on-surface-variant": "#434655",
+              "tertiary-fixed": "#ffdbcd",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#737686",
+              "on-primary": "#ffffff",
+              "surface-tint": "#0053db",
+              "tertiary-fixed-dim": "#ffb596",
+              "on-tertiary-fixed-variant": "#7d2d00",
+              "primary": "#004ac6",
+              "secondary": "#585f6c",
+              "secondary-fixed": "#dce2f3",
+              "secondary-fixed-dim": "#c0c7d6",
+              "inverse-primary": "#b4c5ff",
+              "inverse-on-surface": "#f0f1f2",
+              "surface-container-low": "#f3f3f4",
+              "on-tertiary-fixed": "#360f00",
+              "outline-variant": "#c3c6d7",
+              "on-primary-fixed-variant": "#003ea8",
+              "on-secondary": "#ffffff",
+              "on-secondary-container": "#5e6572",
+              "surface-variant": "#e2e2e3",
+              "on-primary-fixed": "#00174b",
+              "surface-bright": "#f9f9fa",
+              "inverse-surface": "#2f3132",
+              "error-container": "#ffdad6",
+              "error": "#ba1a1a",
+              "on-secondary-fixed": "#151c27",
+              "on-secondary-fixed-variant": "#404754",
+              "surface-container-high": "#e8e8e9",
+              "surface-container-highest": "#e2e2e3",
+              "on-tertiary-container": "#ffede6",
+              "surface-dim": "#dadadb",
+              "tertiary-container": "#bc4800",
+              "primary-container": "#2563eb",
+              "on-surface": "#1a1c1d",
+              "on-background": "#1a1c1d"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      body {
+        font-family: 'Inter', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background-color: #f9f9fa;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .kinetic-shadow {
+        box-shadow: 0px 24px 48px rgba(26, 28, 29, 0.06);
+      }
+      .glass-header {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(20px);
+      }
+    </style>
+</head>
+<body class="text-on-background selection:bg-primary-fixed selection:text-on-primary-fixed">
+<nav class="fixed top-0 w-full z-50 glass-header shadow-sm dark:shadow-none">
+<div class="flex items-center justify-between px-6 py-3 w-full max-w-screen-2xl mx-auto">
+<div class="text-xl font-bold tracking-tighter text-blue-600 dark:text-blue-500">FitSlot</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200" href="#">Dashboard</a>
+<a class="text-blue-600 dark:text-blue-400 font-semibold border-b-2 border-blue-600 transition-colors duration-200" href="#">My Bookings</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-200" href="#">Classes</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant/20">
+<img alt="User Profile Avatar" data-alt="Portrait of a user for profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMbDEMFeU8eytdxAYO3s69ZgGYApJ89kmleLSgrRb-aEW3khB4baMKugFxcYGARMc8rW5RBBaV4PQwIvHPkvZNcVoaL13ysVE4ryOJwD3t1kb_UcskzaejAEvNQTJPDXXgsLCagZUt1c9INlmcbhtbeFAcJzDp14GctGDqMiwKM7xLayhDCU3nLIV5bVf47c4sOGtL9N4lL8rIUqz1X294vprQhXr5O2fQVOU2MnVlWn__FKz5iPpZuUB1V7a4CaIIexEoHAxjorU"/>
+</div>
+</div>
+</div>
+<div class="bg-slate-100/50 dark:bg-slate-800/50 h-[1px]"></div>
+</nav>
+<main class="pt-24 pb-20 px-6 max-w-screen-xl mx-auto min-h-screen">
+<header class="mb-12 pt-16">
+<h1 class="text-4xl font-extrabold tracking-tight text-on-surface mb-2">My Bookings</h1>
+<p class="text-on-surface-variant font-medium">Manage your upcoming training sessions and review past performance.</p>
+</header>
+<section class="mb-16">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-xs font-bold tracking-[0.1em] text-on-surface-variant uppercase">Upcoming Sessions</h2>
+<div class="h-[4px] w-12 bg-surface-container-highest rounded-full"></div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="group bg-surface-container-lowest rounded-xl kinetic-shadow p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden transition-all hover:translate-y-[-4px]">
+<div class="relative w-full md:w-32 h-32 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Intense weightlifting gym background with kettlebells" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeWbkFd9Z1K0kUkOy3CZB3CBW6RmjcGt2zlzVyQk8fgUHFXYs0MYfGA_b18Z2TJiQdiJYKplAWpIyk6hycBXmVOZs0PIvp5mxbknP9io1eO-6Rn00nNRFqlfMsTuyrvZTf76jFBhYPHXazOx8oKHB24gdaqGg9qOyoru3v_0FNirc545KcCQSX-5kNOq14P722vAbnNV7WNcjHOJZEnQplevivsx7rS3PqBAN9Qw-Pz5DMAw8f4_-_poga2DQDnkTwijS-Fiw9Wws"/>
+<div class="absolute inset-0 bg-primary/10"></div>
+</div>
+<div class="flex flex-col justify-between flex-grow">
+<div>
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-bold tracking-wider text-primary uppercase">Strength</span>
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(0,74,198,0.5)]"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Confirmed</span>
+</div>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-4">Advanced Powerlifting</h3>
+<div class="flex flex-wrap gap-x-6 gap-y-2">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-sm font-medium">Monday, Oct 24</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span class="text-sm font-medium">08:00 AM — 09:30 AM</span>
+</div>
+</div>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Coach profile headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy8aqoAhTbEVZIwiCSF4nxw68jH0vubBoswRgnXz6ckviWLTas8-nUdZ-XJ8erkCWXWsxj8G_wfX_5XmqDSDAnf49oKZ6C3rmLjDeiUf-aG5INYCGqQukfT81es9kpLiSTS1t8w7hCv1Sq8ibsT6Lh6GYLwXpBh4k2-gNfCev1JTHCJ2jctmBB7KPCh9K9D4oJJ9v7KFMuubZBgSm0UhSUACJ3lQ_pcCFHffTZEkXJqMvexqexSsyqc8Lupy1IAm7_t3z0V_My_7o"/>
+</div>
+<span class="text-xs font-semibold text-on-surface-variant">Coach Marcus</span>
+</div>
+<button class="text-sm font-bold text-primary hover:underline">Manage</button>
+</div>
+</div>
+</div>
+<div class="group bg-surface-container-lowest rounded-xl kinetic-shadow p-6 flex flex-col md:flex-row gap-6 relative overflow-hidden transition-all hover:translate-y-[-4px]">
+<div class="relative w-full md:w-32 h-32 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Bright yoga studio with mats" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR-AaP_doWk-tXF9BXSxu8iA2QcK_5tFi5oeh4vyYp0Oas8GJa6Ks5g_Kjl6BrGzT-9sIK8-hUXhhiOf86yNAPjhDGlyVHTQzJO7FaARdXU0OOK5HFbtoFy_-xxnSlfTTLQ3nC5WWXnRJNblmFTlnuLONnb7RSgCWCOmJ0bld6uoD7PoiEzYMTyp1gAVlJ85I1wCDVmB3vWfRhs-OxdolcY-8tJ7vFbzNqifMZ0riq5-YnuUgE7NdJvEm0xsXN1Uukrknbgh-4fs0"/>
+<div class="absolute inset-0 bg-tertiary/10"></div>
+</div>
+<div class="flex flex-col justify-between flex-grow">
+<div>
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs font-bold tracking-wider text-tertiary uppercase">Yoga</span>
+<div class="flex items-center gap-1.5">
+<div class="w-2 h-2 rounded-full bg-tertiary shadow-[0_0_8px_rgba(148,55,0,0.5)]"></div>
+<span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">Pending</span>
+</div>
+</div>
+<h3 class="text-xl font-bold text-on-surface mb-4">Sunrise Vinyasa Flow</h3>
+<div class="flex flex-wrap gap-x-6 gap-y-2">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-sm font-medium">Wednesday, Oct 26</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="schedule">schedule</span>
+<span class="text-sm font-medium">06:30 AM — 07:30 AM</span>
+</div>
+</div>
+</div>
+<div class="mt-6 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-surface-container-high overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Instructor profile headshot" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ2e4wxdmngBEjT-yQR_4ELDIRBjy9lfVb79ZSSX2BStE6pS8cY6nN8wYP508hC8n0VPJpu4q5Nok8J27Jmkj_Y87bBPF88GLM55KrS_js8YS3YfoQ1BSKnhLMqBRB2XLaYQstCynzBLzPhCnVNHuOXWpPRKGOlA3cn7dCQpl_Gbl8uYkQVetjYU59NOUhparF8BRJvETYBq9HrSLKEksPOP3jqM3JxyWCgaoxWIAKUmvDELmRBI66IgkUR1fN7xruUpVuM1xVBj0"/>
+</div>
+<span class="text-xs font-semibold text-on-surface-variant">Instructor Elena</span>
+</div>
+<button class="text-sm font-bold text-error hover:underline">Cancel</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section>
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-xs font-bold tracking-[0.1em] text-on-surface-variant uppercase">Booking History</h2>
+<div class="h-[4px] w-12 bg-surface-container-highest rounded-full"></div>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-container-low rounded-xl p-6 transition-colors hover:bg-surface-container-high flex flex-wrap items-center justify-between gap-6 border border-transparent hover:border-outline-variant/10">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">HIIT Circuit Training</h4>
+<p class="text-sm text-on-surface-variant">Friday, Oct 14 • 5:00 PM</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right hidden sm:block">
+<p class="text-[10px] font-black uppercase tracking-widest text-outline">Duration</p>
+<p class="text-sm font-bold text-on-surface">45 min</p>
+</div>
+<div class="bg-surface-container-lowest px-4 py-2 rounded-full">
+<span class="text-xs font-bold text-on-surface-variant">Completed</span>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-lowest transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-6 transition-colors hover:bg-surface-container-high flex flex-wrap items-center justify-between gap-6 border border-transparent hover:border-outline-variant/10">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined" data-icon="pool">pool</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Open Pool Session</h4>
+<p class="text-sm text-on-surface-variant">Monday, Oct 10 • 12:00 PM</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right hidden sm:block">
+<p class="text-[10px] font-black uppercase tracking-widest text-outline">Duration</p>
+<p class="text-sm font-bold text-on-surface">60 min</p>
+</div>
+<div class="bg-surface-container-lowest px-4 py-2 rounded-full">
+<span class="text-xs font-bold text-on-surface-variant">Completed</span>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-lowest transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-6 transition-colors hover:bg-surface-container-high flex flex-wrap items-center justify-between gap-6 border border-transparent hover:border-outline-variant/10">
+<div class="flex items-center gap-6">
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined" data-icon="directions_run">directions_run</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Morning Cardio Blast</h4>
+<p class="text-sm text-on-surface-variant">Saturday, Oct 8 • 07:00 AM</p>
+</div>
+</div>
+<div class="flex items-center gap-8">
+<div class="text-right hidden sm:block">
+<p class="text-[10px] font-black uppercase tracking-widest text-outline">Duration</p>
+<p class="text-sm font-bold text-on-surface">30 min</p>
+</div>
+<div class="bg-surface-container-lowest px-4 py-2 rounded-full">
+<span class="text-xs font-bold text-on-surface-variant">Completed</span>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-lowest transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<div class="md:hidden fixed bottom-0 left-0 w-full bg-white/80 backdrop-blur-xl z-50 px-6 py-4 flex items-center justify-between">
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-bold uppercase tracking-tight">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-blue-600" href="#">
+<span class="material-symbols-outlined" data-icon="event_available" style="font-variation-settings: 'FILL' 1;">event_available</span>
+<span class="text-[10px] font-bold uppercase tracking-tight">Bookings</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="text-[10px] font-bold uppercase tracking-tight">Classes</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-500" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="text-[10px] font-bold uppercase tracking-tight">Profile</span>
+</a>
+</div>
+</body></html>
