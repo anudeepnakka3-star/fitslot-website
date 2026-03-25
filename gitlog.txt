@@ -1,0 +1,8 @@
+7bc6559 2026-03-21 Update profile persistence and local session handling
+e1f6edf 2026-03-21 Update profile system, add demo slot, global avatar sync, and topbar signout buttons
+b0574ed 2026-03-18 feat: Implement responsive design and mobile-first layout
+0b9a0be 2026-03-18 fix: include fitslot.db in deployment for Vercel login
+6753496 2026-03-15 fix: vercel readonly filesystem 500 error & missing static files
+fad0811 2026-03-15 fix: pin Node.js version to 20.x for Vercel better-sqlite3 compatibility
+e3220e0 2026-03-15 chore: Vercel deployment configuration & cleanups
+0ca1c3e 2026-03-14 Initial commit
