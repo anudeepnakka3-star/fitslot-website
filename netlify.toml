@@ -2,7 +2,56 @@
   publish = "public"
   functions = "functions"
 
+# ─── ⚓ CORE API REDIRECT ──────────────────────────────────────────────────────
+# Redirect all /api requests to the Netlify Function
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/api"
+  to = "/.netlify/functions/api/:splat"
   status = 200
+
+# ─── 🎨 CLEAN URL REDIRECTS (STATIC FILES) ──────────────────────────────────
+# Map clean URLs to their physical .html files for Netlify static hosting.
+# This fixes the 404 errors when accessing /login or /dashboard directly.
+
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/login"
+  to = "/admin/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/dashboard"
+  to = "/admin/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/profile"
+  to = "/profile.html"
+  status = 200
+
+[[redirects]]
+  from = "/slots"
+  to = "/slots.html"
+  status = 200
+
+[[redirects]]
+  from = "/my-bookings"
+  to = "/my-bookings.html"
+  status = 200
+
+# ─── 🛰️ FALLBACK ─────────────────────────────────────────────────────────────
+# Optional: Fallback for SPA-like behavior if some routes are missing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
