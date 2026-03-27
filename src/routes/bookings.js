@@ -10,11 +10,12 @@ function todayIST() {
     return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
 }
 
+// Helper: format HH:MM to Date today for comparison
 function timeToDate(timeStr, dateStr) {
     const [h, m] = timeStr.split(':').map(Number);
-    const d = new Date(`${dateStr}T00:00:00+05:30`);
-    d.setHours(h, m, 0, 0);
-    return d;
+    // Create a date object by specifying the IST offset (+05:30)
+    // This ensures 'slotStart' and 'slotEnd' are correct absolute UTC timestamps
+    return new Date(`${dateStr}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00+05:30`);
 }
 
 // POST /api/bookings — book a slot

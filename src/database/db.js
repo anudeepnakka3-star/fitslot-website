@@ -11,7 +11,18 @@ const pool = new Pool({
 
 // Helper: run a query with parameterized values
 async function query(text, params) {
-    return pool.query(text, params);
+    try {
+        return await pool.query(text, params);
+    } catch (err) {
+        console.error('❌ Database Query Error:', {
+            message: err.message,
+            code: err.code,
+            detail: err.detail,
+            hint: err.hint,
+            stack: err.stack
+        });
+        throw err;
+    }
 }
 
 // Helper: get a client from the pool (for transactions)
