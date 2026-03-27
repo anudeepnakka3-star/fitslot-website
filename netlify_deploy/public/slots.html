@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitSlot – Browse and book available gym slots. Real-time availability and waitlist support.">
+    <meta name="keywords" content="gym slots, book gym, campus fitness, FitSlot">
+    <meta property="og:title" content="Book a Slot – FitSlot">
+    <meta property="og:description" content="Browse available gym slots, check occupancy, and book your session in seconds.">
+    <meta property="og:type" content="website">
+    <title>Book a Slot | FitSlot</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="/js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="/index.css">
+</head>
+
+<body class="bg-surface text-on-surface">
+
+    <!-- Sidebar Navigation Shell -->
+    <aside class="h-screen w-0 md:w-64 fixed left-0 top-0 border-r border-outline-variant/20 bg-surface-container-low hidden md:flex flex-col z-50 transition-all">
+        <div class="px-8 py-6 mb-4">
+            <h1 class="text-xl font-black text-on-surface tracking-tight">FitSlot</h1>
+            <p class="text-xs font-bold text-on-surface-variant tracking-wider uppercase mt-1">Student Portal</p>
+        </div>
+        <nav class="flex flex-col gap-1 px-4 h-full">
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/dashboard.html">
+                <span class="material-symbols-outlined text-lg" data-icon="dashboard">dashboard</span>
+                <span class="text-sm font-bold">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-primary bg-primary/10 rounded-xl transition-all" href="/slots.html">
+                <span class="material-symbols-outlined text-lg" data-icon="event_available">event_available</span>
+                <span class="text-sm font-bold">Book a Slot</span>
+            </a>
+            <a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface rounded-xl transition-all" href="/my-bookings.html">
+                <span class="material-symbols-outlined text-lg" data-icon="list_alt">list_alt</span>
+                <span class="text-sm font-bold">My Bookings</span>
+            </a>
+        </nav>
+        <div class="mt-auto p-4 border-t border-outline-variant/10">
+            <div class="flex items-center gap-3 px-4 py-3 mb-2 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20">
+                <button class="w-8 h-8 rounded-full kinetic-gradient flex items-center justify-center text-white font-bold cursor-pointer transition-transform active:scale-95" id="sidebar-avatar" onclick="window.location.href='/student/profile'" title="Profile">?</button>
+                <div class="flex-1 overflow-hidden">
+                    <p class="text-sm font-bold text-on-surface truncate" id="sidebar-name">—</p>
+                    <p class="text-xs text-on-surface-variant uppercase tracking-wider" id="sidebar-role">student</p>
+                </div>
+            </div>
+            <button class="w-full flex justify-center items-center py-2.5 px-4 bg-error/10 text-error rounded-xl font-bold text-sm hover:bg-error/20 transition-all cursor-pointer" data-action="logout">
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <main class="md:ml-64 min-h-screen pb-20">
+        <!-- Top Header Anchor -->
+        <header class="sticky top-0 z-40 glass-nav px-6 md:px-12 py-5 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-outline-variant/10">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-extrabold tracking-tight text-on-surface">Gym Slots</h2>
+                <p class="text-on-surface-variant text-sm mt-1 hidden md:block" id="today-label">Loading Date...</p>
+            </div>
+        </header>
+
+        <div class="px-6 md:px-12 mt-8 max-w-7xl mx-auto">
+            
+            <div class="mb-8">
+                <div class="bg-surface-container-low border border-outline-variant/20 rounded-2xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center gap-4 text-on-surface-variant">
+                    <div class="flex items-center justify-center w-12 h-12 bg-surface-container-highest rounded-full shrink-0">
+                        <span class="material-symbols-outlined text-on-surface">info</span>
+                    </div>
+                    <div>
+                        <p class="font-bold text-on-surface text-base mb-1">Booking Rules</p>
+                        <p class="text-sm">You may book exactly <strong class="text-on-surface">one slot per day</strong>. The booking window opens exactly <strong>30 minutes</strong> before the slot start time. If a slot is full, you can join its Waitlist.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="alert-error" class="hidden px-4 py-3 rounded-lg bg-error-container text-error font-medium mb-6 flex flex-row items-center gap-2 shadow-sm border border-error/20"></div>
+            <div id="alert-success" class="hidden px-4 py-3 rounded-lg bg-[#b4c5ff] text-[#00174b] font-medium mb-6 flex flex-row items-center gap-2 shadow-sm border border-primary/20"></div>
+
+            <div id="slots-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Loading State -->
+                <div class="col-span-full py-24 text-center text-on-surface-variant">
+                    <div class="spinner border-primary border-t-transparent mx-auto mb-4" style="width:30px;height:30px;border-width:3px;"></div>
+                    <p class="text-sm font-bold uppercase tracking-wider">Syncing schedule...</p>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- Bottom Mobile Nav -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 glass-nav px-6 py-3 flex items-center justify-around z-50 shadow-[0_-10px_40px_rgba(0,0,0,0.05)] border-t border-outline-variant/20">
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/dashboard.html">
+            <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+            <span class="text-[10px] font-medium tracking-wide">Dashboard</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-primary" href="/slots.html">
+            <span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+            <span class="text-[10px] font-bold tracking-wide">Slots</span>
+        </a>
+        <a class="flex flex-col items-center gap-1 text-on-surface-variant" href="/my-bookings.html">
+            <span class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+            <span class="text-[10px] font-medium tracking-wide">Bookings</span>
+        </a>
+    </div>
+
+    <!-- Booking Confirm Modal -->
+    <div id="booking-modal" class="fixed inset-0 z-[100] hidden items-end md:items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-0 md:p-4 transition-opacity">
+        <div class="bg-surface-container-lowest rounded-t-3xl md:rounded-3xl shadow-[0_-24px_48px_rgba(0,0,0,0.2)] md:shadow-[0_24px_48px_rgba(0,0,0,0.2)] w-full max-w-md overflow-hidden transform transition-all translate-y-full md:translate-y-4 opacity-0 md:opacity-0" id="booking-modal-content">
+            <div class="px-6 pt-4 pb-2 md:hidden flex justify-center">
+                <div class="w-12 h-1.5 bg-outline-variant/40 rounded-full"></div>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="flex justify-between items-start mb-6">
+                    <h3 class="text-2xl font-black tracking-tight text-on-surface">Review Booking</h3>
+                    <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors" onclick="closeModal()">
+                        <span class="material-symbols-outlined text-on-surface-variant">close</span>
+                    </button>
+                </div>
+
+                <div id="modal-slot-info" class="p-4 bg-surface-container-low border border-outline-variant/20 rounded-xl mb-6"></div>
+
+                <div class="mb-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <label class="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Select Training Goals</label>
+                        <span class="bg-surface-container-highest px-2 py-0.5 rounded text-[10px] font-bold text-on-surface-variant">Optional</span>
+                    </div>
+                    <div class="flex flex-wrap gap-2" id="category-grid"></div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button class="w-full py-3.5 px-4 bg-primary text-on-primary font-bold rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm flex items-center justify-center active:scale-95" id="confirm-book-btn" onclick="confirmBooking()">
+                        <span id="confirm-text">Confirm Booking</span>
+                        <div class="spinner border-white border-t-transparent hidden" id="confirm-spinner" style="width:18px;height:18px;border-width:2px;margin:0;"></div>
+                    </button>
+                    <button class="w-full sm:w-auto py-3.5 px-6 border border-outline-variant/50 text-on-surface font-bold rounded-xl hover:bg-surface-container-low transition-colors text-sm" onclick="closeModal()">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div id="cancel-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-4 transition-opacity">
+        <div class="bg-surface-container-lowest rounded-3xl shadow-[0_24px_48px_rgba(0,0,0,0.2)] w-full max-w-sm overflow-hidden border border-outline-variant/20 transform transition-all scale-95 opacity-0" id="cancel-modal-content">
+            <div class="p-6 md:p-8">
+                <div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center text-error mb-6">
+                    <span class="material-symbols-outlined text-[24px]">cancel</span>
+                </div>
+                
+                <h3 class="text-xl font-black text-on-surface mb-2">Cancel Reservation</h3>
+                <p class="text-on-surface-variant text-sm mb-6">Are you sure you want to drop this booking?</p>
+                
+                <div id="cancel-slot-info" class="p-4 bg-surface-container-low rounded-xl mb-6 border border-outline-variant/20 border-l-4 border-l-error"></div>
+
+                <p class="text-[11px] text-on-surface-variant mb-8 bg-surface-container-highest/50 p-3 rounded-lg leading-relaxed font-medium">
+                    <strong class="text-on-surface font-bold">Important:</strong> Cancellations must be made at least 10 minutes before the slot starts. Waitlisted students will jump up immediately.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button class="w-full py-3 px-4 border border-outline-variant/50 text-on-surface font-bold rounded-xl hover:bg-surface-container-low transition-colors active:scale-95" onclick="closeCancelModal()">
+                        Keep Booking
+                    </button>
+                    <button id="confirm-cancel-btn" class="w-full py-3 px-4 bg-error text-on-error font-bold rounded-xl shadow-md hover:shadow-lg hover:opacity-90 transition-all active:scale-95 flex items-center justify-center" onclick="doCancel()">
+                        <span id="cancel-btn-text">Yes, Cancel</span>
+                        <div class="spinner border-white border-t-transparent hidden" id="cancel-spinner" style="width:18px;height:18px;border-width:2px;margin:0;"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        if (!Auth.requireStudent()) throw new Error('Not authorized');
+
+        let selectedSlotId = null;
+        let selectedCategories = [];
+        let categories = [];
+        let todayBooking = null;
+        let pendingCancelId = null;
+
+        const user = Auth.getUser();
+        document.getElementById('sidebar-name').textContent = user.name || 'User';
+        document.getElementById('sidebar-avatar').textContent = user.photo_url || (user.name || '?').charAt(0).toUpperCase();
+
+        document.querySelectorAll('[data-action="logout"]').forEach(el => {
+            el.addEventListener('click', () => Auth.logout());
+        });
+
+        const today = new Date().toLocaleDateString('en-CA');
+        document.getElementById('today-label').textContent =
+            new Date().toLocaleDateString('en-IN', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+        function showAlert(type, msg) {
+            ['alert-error', 'alert-success'].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add('hidden');
+            });
+            const el = document.getElementById(type === 'error' ? 'alert-error' : 'alert-success');
+            el.innerHTML = `<span class="material-symbols-outlined text-[20px]">${type === 'error' ? 'error' : 'check_circle'}</span> ${msg}`;
+            el.classList.remove('hidden');
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            setTimeout(() => el.classList.add('hidden'), 5000);
+        }
+
+        function timeUntil(iso) {
+            const diff = new Date(iso) - Date.now();
+            if (diff <= 0) return null;
+            const m = Math.floor(diff / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            return `${m}m ${s}s`;
+        }
+
+        /* ─── Render slot cards ──────────────────────────────────── */
+        function renderSlots(slots) {
+            const grid = document.getElementById('slots-grid');
+
+            if (!slots.length) {
+                grid.innerHTML = `
+                <div class="col-span-full py-24 px-6 text-center bg-surface-container-lowest rounded-2xl border border-dashed border-outline-variant/30 flex flex-col items-center shadow-sm">
+                    <span class="material-symbols-outlined text-6xl text-outline-variant mb-4 opacity-50">event_busy</span>
+                    <h3 class="text-xl font-bold text-on-surface mb-2">No slots today</h3>
+                    <p class="text-on-surface-variant">Check back later or view tomorrow's schedule.</p>
+                </div>`;
+                return;
+            }
+
+            const alreadyBookedToday = todayBooking !== null;
+
+            grid.innerHTML = slots.map(slot => {
+                const pct = Math.round((slot.confirmed_count / slot.capacity) * 100);
+                
+                const isBooked = slot.user_booking?.status === 'confirmed';
+                const isWaitlisted = slot.user_booking?.status === 'waitlist';
+                const isEnded = slot.window_status === 'ended';
+                const isNotYet = slot.window_status === 'not_yet';
+                const isFull = slot.available <= 0 && !isBooked && !isWaitlisted;
+
+                const safeName = slot.name.replace(/'/g, "\\'");
+                const demoBadge = slot.is_demo ? '<span class="text-[9px] text-[#F57F17] bg-[#FFF9C4]/80 border border-[#F57F17]/30 px-1.5 py-0.5 rounded ml-2 font-bold uppercase tracking-wider">[DEMO]</span>' : '';
+                const safeStart = slot.start_time;
+                const safeEnd = slot.end_time;
+
+                let cardClasses = 'bg-surface-container-lowest rounded-3xl shadow-[0px_16px_32px_rgba(26,28,29,0.03)] p-6 md:p-8 flex flex-col justify-between border border-transparent transition-all relative overflow-hidden';
+                let barColor = 'from-[#004ac6] to-[#2563eb]';
+                
+                if (isBooked) cardClasses += ' border-primary/30 ring-4 ring-primary/5';
+                else if (isWaitlisted) cardClasses += ' border-tertiary/30 ring-4 ring-tertiary/5';
+                else if (isEnded) cardClasses += ' border-outline-variant/20 opacity-75';
+                else if (!isNotYet && !alreadyBookedToday) cardClasses += ' hover:-translate-y-1 hover:shadow-[0px_24px_48px_rgba(26,28,29,0.06)] hover:border-outline-variant/30 cursor-pointer';
+
+                if (pct >= 100) barColor = 'from-error to-error-container';
+                else if (pct >= 80) barColor = 'from-warning to-[#ffb596]';
+
+                let actionBtn;
+                if (isBooked) {
+                    actionBtn = `<button class="w-full mt-6 py-3 px-4 bg-surface-container-low text-error border border-error/50 font-bold rounded-xl text-sm hover:bg-error/10 transition-colors active:scale-95" onclick="openCancelModal(${slot.user_booking.id},'${safeStart}','${safeEnd}','${safeName}',false)">✕ Cancel Booking</button>`;
+                } else if (isWaitlisted) {
+                    actionBtn = `<button class="w-full mt-6 py-3 px-4 bg-surface-container-low text-tertiary border border-tertiary/50 font-bold rounded-xl text-sm hover:bg-tertiary/10 transition-colors active:scale-95" onclick="openCancelModal(${slot.user_booking.id},'${safeStart}','${safeEnd}','${safeName}',true)">✕ Leave Waitlist (#${slot.user_booking.waitlist_position})</button>`;
+                } else if (isEnded) {
+                    actionBtn = `<button class="w-full mt-6 py-3 px-4 bg-surface-container-high text-on-surface-variant font-bold rounded-xl text-sm" disabled>Slot Ended</button>`;
+                } else if (isNotYet) {
+                    actionBtn = `<button class="w-full mt-6 py-3 px-4 bg-primary/10 text-primary font-bold rounded-xl text-sm countdown-btn cursor-not-allowed border border-primary/20" data-opens="${slot.window_opens_at}" disabled>
+                        Opens in <span class="countdown px-1 bg-surface-container-lowest rounded ml-1" id="cd-${slot.id}">--:--</span>
+                    </button>`;
+                } else if (alreadyBookedToday && !isBooked && !isWaitlisted) {
+                    actionBtn = `<button class="w-full mt-6 py-3 px-4 bg-surface-container-high text-on-surface-variant font-bold rounded-xl text-sm" disabled>Already booked today</button>`;
+                } else if (isFull) {
+                    actionBtn = `<button class="w-full mt-6 py-3 px-4 bg-warning/20 text-[#7d2d00] font-bold rounded-xl text-sm hover:bg-warning/30 transition-colors active:scale-95 border border-warning/30" onclick="openModal(${slot.id},'${safeName}','${safeStart}','${safeEnd}',true)">
+                        Join Waitlist (${slot.waitlist_count} waiting)
+                    </button>`;
+                } else {
+                    actionBtn = `<button class="w-full mt-6 py-3 px-4 bg-primary text-on-primary font-bold rounded-xl text-sm shadow-md hover:opacity-90 hover:shadow-lg transition-all active:scale-95" onclick="openModal(${slot.id},'${safeName}','${safeStart}','${safeEnd}',false)">
+                        Book Now
+                    </button>`;
+                }
+
+                const badgeMap = {
+                    booked: { cls: 'bg-primary text-on-primary', text: '✓ Booked' },
+                    waitlisted: { cls: 'bg-tertiary text-on-tertiary', text: `⏳ Waitlist #${slot.user_booking?.waitlist_position}` },
+                    ended: { cls: 'bg-surface-variant text-on-surface-variant', text: 'Ended' },
+                    notYet: { cls: 'bg-primary/20 text-on-primary-container', text: 'Opening Soon' },
+                    full: { cls: 'bg-error text-on-error', text: 'Full' },
+                    avail: { cls: 'bg-surface-container-highest text-on-surface border border-outline-variant/30', text: `${slot.available} / ${slot.capacity} OPEN` }
+                };
+                
+                let stateMap;
+                if(isBooked) stateMap = badgeMap.booked;
+                else if(isWaitlisted) stateMap = badgeMap.waitlisted;
+                else if(isEnded) stateMap = badgeMap.ended;
+                else if(isNotYet) stateMap = badgeMap.notYet;
+                else if(isFull) stateMap = badgeMap.full;
+                else stateMap = badgeMap.avail;
+
+                return `
+                <div class="${cardClasses}" id="slot-card-${slot.id}">
+                    ${isBooked ? '<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -mr-8 -mt-8 pointer-events-none"></div>' : ''}
+                    ${isWaitlisted ? '<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary/5 rounded-bl-[100px] -mr-8 -mt-8 pointer-events-none"></div>' : ''}
+                    <div>
+                        <div class="flex justify-between items-start mb-5 relative">
+                            <h3 class="text-[28px] md:text-3xl font-black text-on-surface tracking-tighter leading-none">${slot.start_time}</h3>
+                            <span class="px-2.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-md whitespace-nowrap ${stateMap.cls}">${stateMap.text}</span>
+                        </div>
+                        <div class="flex items-center gap-2 mb-8">
+                            <span class="text-sm font-bold text-on-surface-variant">to ${slot.end_time}</span>
+                            <div class="w-1 h-1 rounded-full bg-outline-variant/50"></div>
+                            <span class="text-xs font-bold uppercase tracking-widest text-[#004ac6] bg-[#004ac6]/10 px-2 py-0.5 rounded-sm flex items-center">${slot.name}${demoBadge}</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-bold text-on-surface-variant uppercase tracking-wider">
+                                <span>Occupancy</span>
+                                <span class="${pct >= 100 ? 'text-error' : pct >= 80 ? 'text-[#bc4800]' : 'text-on-surface'}">${pct}%</span>
+                            </div>
+                            <div class="w-full h-2 bg-surface-container-high rounded-full overflow-hidden">
+                                <div class="h-full rounded-full bg-gradient-to-r ${barColor} transition-all duration-700" style="width:${Math.min(pct, 100)}%"></div>
+                            </div>
+                            ${slot.waitlist_count > 0 ? `<div class="text-[11px] font-bold text-tertiary flex items-center justify-end gap-1 mt-1"><span class="material-symbols-outlined text-[13px]">groups</span> ${slot.waitlist_count} waiting in line</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    ${actionBtn}
+                </div>`;
+            }).join('');
+
+            // Init countdown timers
+            document.querySelectorAll('.countdown-btn').forEach(btn => {
+                const opensAt = new Date(btn.dataset.opens);
+                const slotId = btn.closest('div[id^="slot-card-"]').id.replace('slot-card-', '');
+                const ticker = setInterval(() => {
+                    const t = timeUntil(opensAt.toISOString());
+                    const cd = document.getElementById(`cd-${slotId}`);
+                    if (!cd) { clearInterval(ticker); return; }
+                    if (!t) { clearInterval(ticker); location.reload(); return; }
+                    cd.textContent = t;
+                }, 1000);
+            });
+        }
+
+        /* ─── Data loaders ───────────────────────────────────────── */
+        async function loadSlots() {
+            try {
+                const [slotsData, bookData] = await Promise.all([
+                    api.getSlots(today),
+                    api.getBookings({ date: today })
+                ]);
+                todayBooking = bookData.bookings.find(b => b.status !== 'cancelled') || null;
+                renderSlots(slotsData.slots);
+            } catch (e) {
+                document.getElementById('slots-grid').innerHTML = `
+                    <div class="col-span-full py-12 px-6 text-center bg-error-container text-error rounded-2xl font-bold border border-error/20 max-w-lg mx-auto w-full">
+                        Failed to load slots: ${e.message}
+                    </div>`;
+            }
+        }
+
+        async function loadCategories() {
+            try {
+                const data = await api.getCategories();
+                categories = data.categories;
+            } catch (e) { console.warn('Categories:', e); }
+        }
+
+        /* ─── Booking modal ──────────────────────────────────────── */
+        function openModal(slotId, name, start, end, isWaitlist) {
+            selectedSlotId = slotId;
+            selectedCategories = [];
+
+            let stateBadge = '';
+            if (isWaitlist) stateBadge = '<span class="px-2.5 py-1 bg-warning/20 text-[#7d2d00] font-black uppercase tracking-widest text-[9px] rounded ml-3 align-middle">⏳ Waitlist</span>';
+            else stateBadge = '<span class="px-2.5 py-1 bg-[#b4c5ff] text-[#00174b] font-black uppercase tracking-widest text-[9px] rounded ml-3 align-middle">✓ Available</span>';
+
+            document.getElementById('modal-slot-info').innerHTML = `
+                <div class="text-2xl font-black text-on-surface mb-0.5">${start} <span class="text-on-surface-variant font-bold text-lg">to ${end}</span></div>
+                <div class="text-sm font-bold uppercase tracking-wider text-[#004ac6] mt-2">${name} Slot ${stateBadge}</div>
+            `;
+
+            document.getElementById('category-grid').innerHTML = categories.map(c => `
+                <button class="px-3 py-1.5 rounded-full border border-outline-variant/40 bg-transparent text-sm font-medium text-on-surface-variant hover:border-primary hover:text-primary transition-all select-none flex items-center gap-1.5 focus:outline-none" data-id="${c.id}" onclick="toggleCategory(${c.id}, this)">
+                    <span>${c.icon || '💪'}</span> ${c.name}
+                </button>
+            `).join('') || '<div class="text-on-surface-variant text-sm py-2">No categories available</div>';
+
+            const bookBtn = document.getElementById('confirm-book-btn');
+            document.getElementById('confirm-text').textContent = isWaitlist ? 'Join Waitlist' : 'Confirm Booking';
+            if(isWaitlist) {
+                bookBtn.classList.remove('bg-primary', 'text-on-primary');
+                bookBtn.classList.add('bg-tertiary', 'text-on-tertiary');
+            } else {
+                bookBtn.classList.add('bg-primary', 'text-on-primary');
+                bookBtn.classList.remove('bg-tertiary', 'text-on-tertiary');
+            }
+
+
+            const modal = document.getElementById('booking-modal');
+            const content = document.getElementById('booking-modal-content');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // animation delay
+            setTimeout(() => {
+                content.classList.remove('translate-y-full', 'md:translate-y-4', 'opacity-0', 'md:opacity-0');
+                content.classList.add('translate-y-0', 'md:translate-y-0', 'opacity-100', 'md:opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('booking-modal');
+            const content = document.getElementById('booking-modal-content');
+            
+            content.classList.remove('translate-y-0', 'md:translate-y-0', 'opacity-100', 'md:opacity-100');
+            content.classList.add('translate-y-full', 'md:translate-y-4', 'opacity-0', 'md:opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                selectedSlotId = null; 
+                selectedCategories = [];
+            }, 300);
+        }
+
+        function toggleCategory(id, el) {
+            if (selectedCategories.includes(id)) {
+                selectedCategories = selectedCategories.filter(c => c !== id);
+                el.classList.remove('bg-primary/10', 'border-primary', 'text-primary');
+                el.classList.add('bg-transparent', 'border-outline-variant/40', 'text-on-surface-variant');
+            } else {
+                selectedCategories.push(id);
+                el.classList.remove('bg-transparent', 'border-outline-variant/40', 'text-on-surface-variant');
+                el.classList.add('bg-primary/10', 'border-primary', 'text-primary');
+            }
+        }
+
+        async function confirmBooking() {
+            if (!selectedSlotId) return;
+            const text = document.getElementById('confirm-text');
+            const spinner = document.getElementById('confirm-spinner');
+            const btn = document.getElementById('confirm-book-btn');
+            
+            text.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            btn.disabled = true;
+
+            try {
+                const data = await api.book(selectedSlotId, today, selectedCategories);
+                closeModal();
+                showAlert('success', data.message || 'Booking confirmed!');
+                await loadSlots();
+            } catch (e) {
+                closeModal();
+                showAlert('error', e.message);
+            }
+            
+            text.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            btn.disabled = false;
+        }
+
+        /* ─── Cancel modal ───────────────────────────────────────── */
+        function openCancelModal(bookingId, start, end, name, isWaitlist) {
+            pendingCancelId = bookingId;
+            document.getElementById('cancel-slot-info').innerHTML = `
+                <div class="font-black text-on-surface">${start} – ${end}</div>
+                <div class="text-sm font-medium text-on-surface-variant">${name} Slot ${isWaitlist ? '<span class="text-tertiary ml-1">(Waitlist)</span>' : ''}</div>
+            `;
+            const cancelText = document.getElementById('cancel-btn-text');
+            cancelText.textContent = isWaitlist ? 'Leave Waitlist' : 'Yes, Drop Class';
+
+            const modal = document.getElementById('cancel-modal');
+            const content = document.getElementById('cancel-modal-content');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            // small delay for transition
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeCancelModal() {
+            const modal = document.getElementById('cancel-modal');
+            const content = document.getElementById('cancel-modal-content');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                pendingCancelId = null;
+            }, 200);
+        }
+
+        async function doCancel() {
+            if (!pendingCancelId) return;
+            const btnText = document.getElementById('cancel-btn-text');
+            const spinner = document.getElementById('cancel-spinner');
+            const btn = document.getElementById('confirm-cancel-btn');
+            
+            btnText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            btn.disabled = true;
+            
+            try {
+                await api.cancelBooking(pendingCancelId);
+                closeCancelModal();
+                showAlert('success', 'Class schedule updated.');
+                await loadSlots();
+            } catch (e) {
+                closeCancelModal();
+                showAlert('error', e.message);
+            }
+            
+            btnText.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            btn.disabled = false;
+        }
+
+        // Close modals on backdrop click
+        document.getElementById('booking-modal').addEventListener('click', e => { 
+            if (e.target === e.currentTarget || e.target.id === 'booking-modal') closeModal(); 
+        });
+        document.getElementById('cancel-modal').addEventListener('click', e => { 
+            if (e.target === e.currentTarget || e.target.id === 'cancel-modal') closeCancelModal(); 
+        });
+
+        loadCategories();
+        loadSlots();
+    </script>
+</body>
+
+</html>

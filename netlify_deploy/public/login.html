@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FitSlot – Student login to book campus gym slots">
+  <meta name="keywords" content="gym booking, campus gym, student login, FitSlot">
+  <meta property="og:title" content="Login – FitSlot">
+  <meta property="og:description" content="Sign in to book your campus gym session. Google Sign-In and email login supported.">
+  <meta property="og:type" content="website">
+  <title>Login – FitSlot</title>
+  
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="/js/tailwind-config.js"></script>
+  <link rel="stylesheet" href="/index.css">
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    /* Google Identity buttons need to keep their structure */
+    .google-btn-wrap { display: flex; justify-content: center; margin-bottom: 0.5rem; }
+    .google-btn-wrap > div { width: 100% !important; }
+  </style>
+</head>
+
+<body class="text-on-surface antialiased bg-surface min-h-screen flex text-center items-center justify-center p-6 bg-[radial-gradient(ellipse_at_20%_50%,rgba(0,74,198,0.04)_0%,transparent_60%),radial-gradient(ellipse_at_80%_20%,rgba(37,99,235,0.04)_0%,transparent_60%)]">
+  <div class="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-[0px_24px_48px_rgba(26,28,29,0.06)] p-8 md:p-12 relative overflow-hidden text-center mx-auto transition-all">
+    
+    <!-- Decorative Glow -->
+    <div class="absolute -right-12 -top-12 w-32 h-32 bg-primary-container/10 rounded-full blur-2xl"></div>
+
+    <!-- Logo -->
+    <div class="flex flex-col items-center gap-2 mb-10 relative z-10">
+      <div class="w-14 h-14 rounded-xl kinetic-gradient text-white flex items-center justify-center text-3xl shadow-lg">
+        <span class="material-symbols-outlined">fitness_center</span>
+      </div>
+      <div class="text-2xl font-black tracking-tight text-on-surface">Fit<span class="text-primary">Slot</span></div>
+    </div>
+
+    <!-- Removed Tabs -->
+
+    <!-- Alerts -->
+    <div id="alert-error" class="hidden mb-6 p-4 rounded-md bg-error-container text-error text-sm font-medium text-left"></div>
+    <div id="alert-success" class="hidden mb-6 p-4 rounded-md bg-primary-fixed text-on-primary-fixed text-sm font-medium text-left"></div>
+
+    <!-- ─── Login Form ─── -->
+    <form id="login-form" autocomplete="on" class="relative z-10 w-full text-left">
+      <h2 class="text-2xl font-extrabold tracking-tight text-on-surface text-left">Welcome back</h2>
+      <p class="text-on-surface-variant text-sm mb-8 text-left">Sign in to book your kinetic sanctuary session.</p>
+
+      <div class="google-btn-wrap" id="g-signin-login"></div>
+
+      <button type="button" class="hidden w-full flex items-center justify-center gap-2 py-3 px-4 bg-surface-container-lowest border border-outline-variant/30 rounded-full text-sm font-bold text-on-surface hover:shadow-md transition-all" id="google-fallback-login" onclick="startGoogleSignIn()">
+         <!-- SVG icon from old file -->
+         <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4" />
+            <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853" />
+            <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05" />
+            <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" />
+          </svg>
+          Sign in with Google
+      </button>
+
+      <div class="flex items-center gap-3 my-6 text-xs text-on-surface-variant uppercase tracking-wider font-bold">
+        <div class="flex-1 h-px bg-outline-variant/20"></div>
+        or sign in with email
+        <div class="flex-1 h-px bg-outline-variant/20"></div>
+      </div>
+
+      <div class="flex flex-col gap-5 text-left mb-8">
+        <div class="w-full">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2" for="login-email">College Email</label>
+          <input class="w-full bg-surface-container-low border-transparent focus:bg-surface-container-lowest focus:border-outline-variant/40 focus:ring-0 rounded-md py-3 px-4 text-sm transition-all" type="email" id="login-email" placeholder="yourname@bvrit.ac.in" autocomplete="email" required>
+        </div>
+        <div class="w-full">
+          <label class="block text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-2" for="login-password">Password</label>
+          <input class="w-full bg-surface-container-low border-transparent focus:bg-surface-container-lowest focus:border-outline-variant/40 focus:ring-0 rounded-md py-3 px-4 text-sm transition-all" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
+      </div>
+
+      <button class="w-full flex items-center justify-center h-12 rounded-full bg-surface-container-high border border-outline-variant/30 text-on-surface hover:bg-surface-container-highest transition-all text-sm font-bold shadow-sm active:scale-95" type="submit" id="login-btn">
+        <span id="login-btn-text">Sign In with Email</span>
+        <div class="spinner !hidden" id="login-spinner"></div>
+      </button>
+
+      <p class="mt-6 text-sm text-center text-on-surface-variant">
+        Admin? <a href="/admin/login.html" class="text-primary font-bold hover:underline">Admin Login →</a>
+      </p>
+    </form>
+
+    <!-- Removed Register Form -->
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script>
+    const GOOGLE_CLIENT_ID = '254105171372-aib0pt80had9mvnll3bbj5n3grn2phgo.apps.googleusercontent.com';
+
+    if (Auth.isLoggedIn() && Auth.getRole() === 'student') {
+      window.location.href = '/dashboard.html';
+    }
+
+    // Tabs removed, so switchTab is no longer needed
+
+    function showAlert(type, msg) {
+      hideAlerts();
+      const el = document.getElementById(`alert-${type}`);
+      el.textContent = (type === 'error' ? '⚠ ' : '✓ ') + msg;
+      el.classList.remove('hidden');
+    }
+
+    function hideAlerts() {
+      document.getElementById('alert-error').classList.add('hidden');
+      document.getElementById('alert-success').classList.add('hidden');
+    }
+
+    function setLoading(formId, loading) {
+      const prefix = formId === 'login-form' ? 'login' : 'reg';
+      document.getElementById(`${prefix}-btn-text`).classList.toggle('hidden', loading);
+      document.getElementById(`${prefix}-spinner`).classList.toggle('!hidden', !loading);
+      document.getElementById(`${prefix}-btn`).disabled = loading;
+    }
+
+    /* ─── Google Identity Services callback ─────────────────────── */
+    async function handleGoogleCredential(response) {
+      hideAlerts();
+      try {
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credential: response.credential })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Google sign-in failed');
+        if (data.user.role !== 'student') {
+          showAlert('error', 'Admin accounts must use the Admin Login page.');
+          return;
+        }
+        Auth.setSession(data.token, data.user);
+        window.location.href = '/dashboard.html';
+      } catch (err) {
+        showAlert('error', err.message);
+      }
+    }
+
+    /* ─── Init Google Sign-In buttons after GIS loads ─────────── */
+    window.addEventListener('load', () => {
+      if (!window.google?.accounts?.id) {
+        document.getElementById('google-fallback-login').classList.remove('hidden');
+        return;
+      }
+
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredential,
+        auto_select: false,
+      });
+
+      const btnConfig = { theme: 'outline', size: 'large', width: 340, text: 'signin_with', shape: 'rectangular' };
+      google.accounts.id.renderButton(document.getElementById('g-signin-login'), { ...btnConfig });
+    });
+
+    function startGoogleSignIn() {
+      showAlert('error', 'Google Sign-In could not load. Check your internet connection and try again.');
+    }
+
+    /* ─── Forms ──────────────────────────────────── */
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlerts();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      setLoading('login-form', true);
+      try {
+        const data = await api.login(email, password);
+        if (data.user.role !== 'student') {
+          showAlert('error', 'This login is for students only. Use Admin Login.');
+          setLoading('login-form', false);
+          return;
+        }
+        Auth.setSession(data.token, data.user);
+        window.location.href = '/dashboard.html';
+      } catch (err) {
+        showAlert('error', err.message);
+        setLoading('login-form', false);
+      }
+    });
+
+    // Register form logic removed
+  </script>
+</body>
+</html>

@@ -1,6 +1,13 @@
 node_modules/
 .env
+.env*.local
+.env.production
 *.db
 !fitslot.db
 *.db-shm
 *.db-wal
+
+.vercel
+.netlify/
+dist/
+build/
