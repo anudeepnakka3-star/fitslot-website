@@ -33,53 +33,32 @@ FitSlot is a full-stack web application for managing campus gym slot bookings. S
 |---|---|
 | **Frontend** | HTML, Tailwind CSS (CDN), Vanilla JS |
 | **Backend** | Node.js, Express.js |
-| **Database** | SQLite (via better-sqlite3) |
+| **Database** | PostgreSQL (Supabase / Neon) |
 | **Auth** | JWT, bcryptjs, Google Identity Services |
 | **Security** | Helmet, express-rate-limit, express-validator |
-| **Hosting** | Vercel (serverless) |
+| **Hosting** | Netlify / Vercel |
 
 ## 📁 Project Structure
 
 ```
 fitslot_website/
-├── server.js                  # Express app entry point
-├── package.json
-├── vercel.json                # Vercel deployment config
-├── .env.example               # Environment variables template
-├── public/                    # Static frontend
-│   ├── index.html             # Landing page
-│   ├── login.html             # Student login
-│   ├── dashboard.html         # Student dashboard
-│   ├── slots.html             # Slot booking page
-│   ├── my-bookings.html       # Booking history
-│   ├── profile.html           # Profile settings
-│   ├── 404.html               # Custom error page
-│   ├── index.css              # Global styles
-│   ├── js/
-│   │   ├── api.js             # API client helper
-│   │   ├── auth.js            # Auth session management
-│   │   └── tailwind-config.js # Tailwind theme config
-│   └── admin/
-│       ├── login.html         # Admin login
-│       ├── dashboard.html     # Admin analytics
-│       ├── slots.html         # Slot monitor
-│       ├── attendance.html    # Attendance marking
-│       └── students.html      # Student management
-└── src/
-    ├── config/                # App configuration
-    ├── database/
-    │   ├── db.js              # SQLite schema & migrations
-    │   └── seed.js            # Database seeder
-    ├── middleware/
-    │   └── auth.js            # JWT auth middleware
-    └── routes/
-        ├── auth.js            # Authentication routes
-        ├── slots.js           # Slot CRUD
-        ├── bookings.js        # Booking management
-        ├── attendance.js      # Attendance marking
-        ├── analytics.js       # Admin analytics
-        ├── notifications.js   # Notification system
-        └── users.js           # User/student management
+├── backend/                    # Server-side logic
+│   ├── src/                   # Backend source code
+│   │   ├── config/            # App configuration
+│   │   ├── database/          # DB schema & migrations
+│   │   ├── middleware/        # Auth & validation
+│   │   └── routes/            # API endpoints
+│   ├── functions/             # Netlify serverless functions
+│   ├── tests/                 # Integration & unit tests
+│   ├── server.js              # Express app entry point
+│   └── .env                   # Environment variables (local)
+├── frontend/                   # Client-side logic
+│   ├── public/                # Static assets & HTML
+│   └── stitch/                # Design & UI source files
+├── netlify.toml               # Netlify configuration
+├── vercel.json                # Vercel configuration
+├── package.json               # Dependencies & scripts
+└── README.md                  # Project documentation
 ```
 
 ## 🚀 Getting Started
@@ -119,7 +98,7 @@ The app will be available at **http://localhost:3000**
 | `PORT` | Server port | `3000` |
 | `JWT_SECRET` | Secret key for JWT tokens | (generate a random string) |
 | `JWT_EXPIRES_IN` | Token expiration time | `24h` |
-| `DB_PATH` | SQLite database file path | `./fitslot.db` |
+| `DATABASE_URL` | PostgreSQL connection string | `postgres://user:pass@host:5432/db` |
 | `STUDENT_EMAIL_DOMAIN` | Allowed email domain for students | `bvrit.ac.in` |
 | `GOOGLE_CLIENT_ID` | Google OAuth Client ID | (from Google Cloud Console) |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | (from Google Cloud Console) |
@@ -183,21 +162,18 @@ After running `npm run seed`:
 |---|---|---|
 | `GET` | `/api/health` | Health check |
 
-## 🌐 Deployment (Vercel)
+The project is configured for both Netlify and Vercel. 
 
-The project is configured for Vercel with `vercel.json`. To deploy:
+**For Netlify:**
+- Use the `netlify deploy` command.
+- The `publish` folder is `frontend/public`.
+- The `functions` folder is `backend/functions`.
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
+**For Vercel:**
+- Use the `vercel` command.
+- Configuration is handled in `vercel.json`.
 
-# Deploy
-vercel
-```
-
-> **⚠️ Important:** SQLite does not persist on Vercel's serverless filesystem. For production, consider migrating to PostgreSQL (Supabase/Neon).
-
-Set environment variables in Vercel Dashboard → Settings → Environment Variables.
+> **✅ Optimized:** The project uses PostgreSQL for production-ready persistence. Ensure your `DATABASE_URL` is set in the respective platform dashboards.
 
 ## 📝 License
 
