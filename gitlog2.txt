@@ -1,5 +1,0 @@
-7bc6559 2026-03-21 19:21:25 +0530 Update profile persistence and local session handling
-e1f6edf 2026-03-21 09:54:38 +0530 Update profile system, add demo slot, global avatar sync, and topbar signout buttons
-b0574ed 2026-03-18 15:18:39 +0530 feat: Implement responsive design and mobile-first layout
-0b9a0be 2026-03-18 14:54:46 +0530 fix: include fitslot.db in deployment for Vercel login
-6753496 2026-03-15 13:09:52 +0530 fix: vercel readonly filesystem 500 error & missing static files

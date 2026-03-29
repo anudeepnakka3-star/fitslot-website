@@ -1,6 +1,6 @@
 [build]
-  publish = "public"
-  functions = "functions"
+  publish = "frontend/public"
+  functions = "backend/functions"
 
 # ─── ⚓ CORE API REDIRECT ──────────────────────────────────────────────────────
 # Redirect all /api requests to the Netlify Function

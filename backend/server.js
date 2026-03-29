@@ -1,7 +1,7 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 
@@ -86,7 +86,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Serve static frontend
-const publicPath = path.join(process.cwd(), 'public');
+const publicPath = path.join(process.cwd(), 'frontend', 'public');
 app.use(express.static(publicPath));
 
 // API Routes (with rate limiting)
