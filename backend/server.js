@@ -89,6 +89,24 @@ app.get('/api/health', (req, res) => {
 const publicPath = path.join(process.cwd(), 'frontend', 'public');
 app.use(express.static(publicPath));
 
+// Auto-initialize DB middleware (crucial for Serverless platforms like Vercel)
+let dbInitializedPromise = null;
+app.use(async (req, res, next) => {
+    if (!dbInitializedPromise) {
+        dbInitializedPromise = initDb().catch(err => {
+            dbInitializedPromise = null;
+            throw err;
+        });
+    }
+    try {
+        await dbInitializedPromise;
+        next();
+    } catch (err) {
+        console.error('❌ Serverless DB Init Error:', err);
+        next(err);
+    }
+});
+
 // API Routes (with rate limiting)
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/slots', apiLimiter, slotRoutes);
@@ -117,11 +135,9 @@ app.use((req, res, next) => {
     }
 });
 
-
-
 // Global error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error(err.stack || err);
     res.status(err.status || 500).json({ error: err.message || 'Internal server error' });
 });
 
